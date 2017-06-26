@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Master</title>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<script src="./js/colpick/colpick.js" type="text/javascript"></script>
+
+<script id="jquery-colorramp-script" src="./colorramp/jquery-colorramp/main.js" ></script>
+
+<script src="./js/javascriptRule.js" type="text/javascript"></script>
+<script src="./js/javascript.js" type="text/javascript"></script>
+<link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/colpick/colpick.css">
+
+<link id="jq-colorramp-ColorRampStyleSheet" rel="stylesheet" href="./colorramp/jquery-colorramp/style.css" type="text/css">
+
+<!-- <script src="./js/collorpicker-master/evol.colorpicker.js" type="text/javascript"></script> -->
+<!-- <link rel="stylesheet" href="./css/collorpicker-master/evol.colorpicker.css"> -->
+
+<script>
+	
+</script>
+</head>
+<body>
+	<button id="botao">Propiedades</button>
+	<div id="janela" title="Propiedades">
+		<div id="name">
+			<h1>
+				<label>Name:</label>
+				<input type="text" id="txtbox" value="">
+			</h1>
+			<h2 class="ui-widget">
+				<label>Change Group:</label> 
+				<select id="chggrp">
+					<option value="">Select group...</option>
+					<option value="poligonos">Poligonos</option>
+					<option value="lineas">Lineas</option>
+					<option value="puntos">Puntos</option>
+				</select>
+			</h2>
+			<p>Description: <br> <textarea rows="2" cols="59" id="txtarea"></textarea></p>
+		</div>
+		<div id="addnewrule">
+			<div id="rules"><br>
+				<p>Symbology controlled by scale:</p>
+				<div id="rulemaster" style='height:auto;'>					
+					<div id="escalas">
+						<h3 class="ui-widget">
+							<label>Minimum Scale:</label> 
+							<select class="escalamin">
+								<option value="-1">Select one...</option>
+								<option value="1000">1.000</option>
+								<option value="2500">2.500</option>
+								<option value="5000">5.000</option>
+								<option value="10000">10.000</option>
+								<option value="20000">20.000</option>
+								<option value="30000">30.000</option>
+								<option value="40000">40.000</option>
+								<option value="50000">50.000</option>
+								<option value="60000">60.000</option>
+								<option value="70000">70.000</option>
+								<option value="80000">80.000</option>
+								<option value="90000">90.000</option>
+								<option value="100000">100.000</option>
+								<option value="200000">200.000</option>
+								<option value="250000">250.000</option>
+								<option value="500000">500.000</option>
+								<option value="1000000">1.000.000</option>
+							</select>
+						</h3>
+						<h4 class="ui-widget">
+							<label>Maximum Scale:</label> 
+							<select class="escalamax">
+								<option value="-1">Select one...</option>
+								<option value="1000">1.000</option>
+								<option value="2500">2.500</option>
+								<option value="5000">5.000</option>
+								<option value="10000">10.000</option>
+								<option value="20000">20.000</option>
+								<option value="30000">30.000</option>
+								<option value="40000">40.000</option>
+								<option value="50000">50.000</option>
+								<option value="60000">60.000</option>
+								<option value="70000">70.000</option>
+								<option value="80000">80.000</option>
+								<option value="90000">90.000</option>
+								<option value="100000">100.000</option>
+								<option value="200000">200.000</option>
+								<option value="250000">250.000</option>
+								<option value="500000">500.000</option>
+								<option value="1000000">1.000.000</option>
+							</select>
+						</h4>
+					</div>
+					<div id="simb_lbl">
+						<h5>
+							<label>Simbolized by:</label>
+							<button class="simb">Choose type</button>
+						</h5>
+						<div id="simbwindow" title="Choose type" >
+							<form>
+								<div id="radio" >
+									<input type="radio" id="sencillo" name="radio"	checked="checked"><label for="sencillo">Sencillo</label>
+									<input type="radio" id="categorias" name="radio"><label	for="categorias">Categorias</label> 
+									<input type="radio" id="bubble" name="radio"><label for="bubble">Bubble</label>
+									<!--<input type="radio" id="cluster" name="radio"><label for="cluster">Cluster</label>-->
+									<!--<input type="radio"	id="mapasdecalor" name="radio"><label	for="mapasdecalor">Mapas de Calor</label>-->
+								</div>
+							</form> <br>
+							<button id="editsymb">Edit Symbol Type</button> <br>
+								<div id="editsymbwindow" title="Edit Symbol Type">
+									<div id="ptnstipus">
+										<label>Select symbol</label>
+										<select id="symbsenc">
+											<option value="-1">Select group...</option>
+											<option value="star">Star</option>
+											<option value="circle">Circle</option>
+											<option value="square">Square</option>
+											<option value="square">Diamond</option>
+											<option value="triangle">Triangle</option>
+											<option value="x">X</option>
+										</select>
+									</div><br>
+									<button id="pickersencrell">Fill Colour</button>
+									<button id="pickersencbord">Stroke Colour</button> <br><br>									
+									<div id="sencstroke">
+										<label for="txtsencstroke">Stroke</label>
+										<input type="text" id="txtsencstroke" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+										<div id="sencstrokeslider"></div>
+									</div>
+									<div id="sencsize">
+										<label for="txtsencsize">Symbol Size</label>
+										<input type="text" id="txtsencsize" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+										<div id="sencsizeslider"></div>
+									</div>
+									<div id="senctransp">
+										<label for="txtsenctransp">Transparency</label>
+										<input type="text" id="txtsenctransp" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+										<div id="senctranspslider"></div>
+									</div> <br>
+									<input type="checkbox" id="dashline">
+									<label for="dashline">Dash Array:</label>
+									<div style="display: none" id="linedash">										
+										<select class="dash">
+											<option value="-1">Select size...</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="12">12</option>
+											<option value="14">14</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+										</select>
+										<select class="array">
+											<option value="-1">Select size...</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="12">12</option>
+											<option value="14">14</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+										</select>									
+									</div>
+<!-- 									<input type="checkbox" id="sencselsymb"> <label for="sencselsymb">Select Symbol</label> <br> -->
+<!-- 									<div style="display: none" id="sencselect"> -->
+<!-- 									<div id="sencselect">									 -->									
+<!-- 										<button id="sencselsymb">Select Symbol from a link</button> -->
+<!-- 										<button id="sencselpc">Select Symbol from PC</button> -->
+<!-- 										<input type="text" class="symbbox"> -->
+<!-- 									</div> -->
+									<br><br>
+									<button id="oksenc">Ok</button>
+								</div>									
+								<div id="editsymbwindow2" title="Edit Symbol Type">
+									<h1>
+										<label>Select field:</label>
+										<input type="text" id="catcolumbox" size="15" value="">		
+										<label>Select cell field:</label>
+										<input type="text" id="catcellbox" size="15" value="">	
+									</h1>
+									<input type="checkbox" id="selsecfieldcat"><label for="selsecfieldcat">Second field:</label>
+									<h2>	
+										<div style="display: none" id="divsecfield">
+										<input type="text" id="catseccolumbox" size="15 value=">
+										<label>Select cell field:</label>
+										<input type="text" id="catcellsecbox" size="15" value="">			
+										</div>
+									</h2><br>
+									<h3 class="ui-widget">
+										<label id="lblcolorramp">Color Ramp</label>
+										<div class="colorramp"></div>
+									</h3>
+									<h4 class="ui-widget">
+									<label>Normalization:</label> 
+									<select id="normalcat">
+										<option value=""></option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+									</select>								
+									</h4>
+									<h5>
+										<input type="checkbox" id="defintervalcat"> <label for="defintervalcat">Definir Intervalo de colores</label>
+										<div id="intercolorcat">
+											<!-- -->
+										</div>											
+									</h5>
+									<h6 class="ui-widget">
+									<label>Interval:</label> 
+									<select id="intervalcat">
+										<option value=""></option>
+									</select>
+									</h6>
+									<br><br>
+									<button id="okcat">Ok</button>
+								</div>
+								<div id="editsymbwindow3" title="Edit Symbol Type">									
+										<label>Select field:</label>
+										<input type="text" id="bubcolumbox" size="15" value="">	
+										<label>Select cell field:</label>
+										<input type="text" id="bubcellbox" size="15" value="">	
+									<br><br>
+										<label>Normalization:</label> 
+										<select id="normalbub">
+											<option value=""></option>
+										</select>
+										<label class="lblinter">Interval:</label> 
+										<select id="intervalbub">
+											<option value=""></option>
+										</select>
+									<br><br>
+<!-- 										<label class="lblcolorramp">Color Ramp</label> -->
+<!-- 										<div class="colorramp"></div><br> -->
+										<button id="propbub">Propiedades</button> 
+											<div id="propbubwindow" title="Propiedades">
+												<div id="bubstroke">
+													<label for="txtbubstroke">Stroke</label>
+													<input type="text" id="txtbubstroke" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+													<div id="bubstrokeslider"></div>
+												</div>
+												<div id="bubtransp">
+													<label for="txtbubtransp">Transparency</label>
+													<input type="text" id="txtbubtransp" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+													<div id="bubtranspslider"></div>
+												</div> <br>
+												<button id="pickerbubrell">Fill Colour</button>
+												<button id="pickerbubbord">Stroke Colour</button><br><br>
+												<label for="symbbubsize">Symbol Size:</label>
+												<div id="sizebubcontrol">												
+													<div id="bubminsize">
+														<label for="txtbubmin">Minimum Size:</label>
+														<input type="text" id="txtbubmin" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+														<div id="bubminslider"></div>
+													</div>
+													<div id="bubmaxsize">
+														<label for="txtbubmax">Maximum Size</label>
+														<input type="text" id="txtbubmax" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+														<div id="bubmaxslider"></div>
+													</div><br>													
+												<button id="okbubwindow">Ok</button>
+											</div>
+										</div>	
+										<label class="lblcolorramp">Color Ramp:</label>
+										<div class="colorramp"></div><br>								
+									<br><br>
+									<button id="okbub">Ok</button>
+								</div>
+								<div id="editsymbwindow4" title="Edit Symbol Type">
+									<h1 class="ui-widget">
+										<label>Group:</label> 
+										<select id="groupclus">
+											<option value="">Select group...</option>
+										</select>
+									</h1>
+									<div id="clusstroke">
+										<label for="txtclusstroke">Stroke</label>
+										<input type="text" id="txtclusstroke" readonly style="border: 0; color: #f6931f; font-weight: bold;">
+										<div id="clusstrokeslider"></div>
+									</div>
+									<h2 class="ui-widget">
+										<label>Cluster Font label</label> 
+										<select id="fontclus">
+											<option value="">Select group...</option>
+										</select>
+									</h2><br>
+									<h3 class="ui-widget">
+										<label>Size:</label> 
+										<select id="minsizeclus">
+											<option value="">Select group...</option>
+										</select>
+									</h3>
+									<h4 class="ui-widget">
+										<label></label> 
+										<select id="maxsizeclus">
+											<option value="">Select group...</option>
+										</select>
+									</h4>									
+									<div id="cluscolours">
+										<button id="pickerclusrell">Fill Colour</button>
+										<button id="pickerclusbord">Stroke Colour</button>
+										<button id="pickercluslbl">label Colour</button>
+									</div><br>
+									<button id="okclus">Ok</button>
+								</div>
+								<div id="editsymbwindow5" title="Edit Symbol Type">
+									<h1 class="ui-widget">
+										<label>Select Field:</label> 
+										<select id="mcselfield">
+											<option value="">Select group...</option>
+										</select>
+									</h1>	
+									<h2 class="ui-widget">
+										<label>Radio:</label> 
+										<select id="mcradio">
+											<option value="">Select group...</option>
+										</select>
+									</h2>	
+									<h3 class="ui-widget">
+										<label>Cell Height</label> 
+										<select id="mccellh">
+											<option value="">Select group...</option>
+										</select>
+									</h3>	
+									<h4 class="ui-widget">
+										<label>Cell Width</label> 
+										<select id="mccellw">
+											<option value="">Select group...</option>
+										</select>
+									</h4>	
+									<h5 class="ui-widget"> 
+											<label id="lblcolorramp">Color Ramp</label>
+											<div class="colorramp"></div>
+									</h5><br>
+									<button id="okmc">Ok</button>
+								</div>
+								<button class="oksymb">Ok</button>
+							</div>
+						<h6>
+							<input type="checkbox" id="checklbltype">
+							<label for="checklbltype">Label</label>
+						</h6>
+						<button class="editlbl" disabled>Edit Label</button>						
+						<div id="editlblwindow" title="Edit Label">							
+								<div id="lbloptions" class="ui-widget">	
+									<h1 class="ui-widget">								
+										<label>Tamaño:</label> 
+										<select id="lblsize">
+											<option value="-1">Select size...</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="12">12</option>
+											<option value="14">14</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+										</select>
+									</h1>
+									<h2>
+									<input type="checkbox" id="checklblN"> <label for="checklblN"><b>N</b></label> 
+									<input type="checkbox" id="checklblI"> <label for="checklblI"><i>I</i></label> 
+									<input type="checkbox" id="checklblS"> <label for="checklblS" style="font-style: oblique;">O</label>
+									</h2>
+									<h3 class="ui-widget">
+										<label class="family">Family:</label> 
+										<select id="lblfamily" class="ui-widget">
+											<option value="-1">Select a family...</option>
+											<option value="Arial">Arial</option>
+											<option value="Comic">Comic</option>
+											<option value="Times Roman">Times Roman</option>
+										</select> 
+									</h3>
+								<br><br>																
+										<label>Columna:</label>
+										<input type="text" id="lblcolumbox" size="15" value="">	
+										
+										<label>Celula:</label>
+										<input type="text" id="lblcellbox" size="15" value="">									
+								<br><br>		
+									<label id="abc">AaBbCc</label>
+									<button id="picker">Show Color Picker</button>
+<!-- 									<div id="transp"> -->
+<!-- 										<label for="txttransp">Transparency</label>  -->
+<!-- 										<input type="text" id="txttransp" readonly style="border: 0; color: #f6931f; font-weight: bold;"> -->
+<!-- 										<div id="transpslider"></div> -->
+<!-- 									</div> -->
+									<br><label id="vazio">.</label>
+									<input type="checkbox" id="showlblscl">
+									<label for="showlblscl">Label Scale Control</label>
+									<div style="display: none" id="escalaslbl">
+										<h1 class="ui-widget">
+											<label>Minimum Scale:</label> 
+											<select id="escalaminlbl">
+												<option value="-1">Select one...</option>
+												<option value="10000">10.000</option>
+												<option value="50000">50.000</option>
+												<option value="100000">100.000</option>
+											</select>
+										</h1>
+										<h2 class="ui-widget">
+											<label>Maximum Scale:</label> 
+											<select id="escalamaxlbl">
+												<option value="-1">Select one...</option>
+												<option value="10000">10.000</option>
+												<option value="50000">50.000</option>
+												<option value="100000">100.000</option>
+											</select>
+										</h2>
+									</div>
+								</div>
+							<button class="oklbl">Ok</button>
+						</div>					
+					</div>
+					<button style ="top: 10px"class="cerrar">Eliminar</button>
+				</div>
+			</div>
+		</div>
+<!-- 		<div id="addnewscale"> -->
+<!-- 			<button id="addnsc">Add New Scale</button> -->
+<!-- 		</div> <br>  -->
+<!-- 		<input type="checkbox" id="chkapplyfilter"> -->
+<!-- 		<label for="chkapplyfilter">Apply Filter</label><br>			 -->
+<!-- 			<div style="display: none" id="applyfilter"> -->
+<!-- 				<h1> -->
+<!-- 					<select id="chkqrum" class="ui-widget"> -->
+<!-- 						<option value="">Select group...</option> -->
+<!-- 					</select> -->
+<!-- 				</h1> -->
+<!-- 				<h2> -->
+<!-- 					<select id="chkqrdois" class="ui-widget"> -->
+<!-- 						<option value="">Select group...</option> -->
+<!-- 					</select>  -->
+<!-- 				</h2><br>					 -->
+<!-- 			<input type="checkbox" id="chkfilterman"> -->
+<!-- 			<label for="chkfilterman">Filtro Manual</label> <br> <br> -->
+<!-- 				<div style="display: none" id="filterbox"> -->
+<!-- 					<textarea class="filtromanual" rows="3" cols="60"></textarea><br> <br> -->
+<!-- 				</div>	 -->
+<!-- 			</div>							 -->
+			<br><br>
+		<button id="ok">Ok</button>
+	</div>
+</body>
+</html>
+
+

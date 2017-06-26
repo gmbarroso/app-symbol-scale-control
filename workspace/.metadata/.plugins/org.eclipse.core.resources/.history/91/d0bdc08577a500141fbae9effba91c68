@@ -1,0 +1,1790 @@
+/**
+ * 
+ */
+// variavel para new scale
+var i = 1;
+//variavel para xml
+var sldsymb;
+
+var simples;
+var categorias;
+var bubbles;
+var simplesf;
+var categoriasf;
+var bubblesf;
+//var lbllbl;
+var lbl;
+var lblf;
+
+
+//var type;
+//var colfill;
+//var parafill;
+//var fill;
+
+//Conversor de css.background para hex
+$.cssHooks.backgroundColor = {
+	    get: function(elem) {
+	        if (elem.currentStyle)
+	            var bg = elem.currentStyle["backgroundColor"];
+	        else if (window.getComputedStyle)
+	            var bg = document.defaultView.getComputedStyle(elem,
+	                null).getPropertyValue("background-color");
+	        if (bg.search("rgb") == -1)
+	            return bg;
+	        else {
+	            bg = bg.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	            function hex(x) {
+	                return ("0" + parseInt(x).toString(16)).slice(-2);
+	            }
+	            return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
+	        }
+	    }
+	};
+
+// Abrir propriedades
+$(function() {
+	$("#janela").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+//		"height" : 500,
+//		"width" : 540
+	});
+
+	$("#botao").click(function() {
+		$("#janela").dialog("open");
+	});
+
+	// $( "#ok" ).click(function() {
+	// $( "#janela" ).dialog( "close" );
+	// });
+});
+
+
+// Retorna valor name no botao "OK"
+$(function() {
+	$("#janela2").dialog({
+		autoOpen : false,
+	});
+
+	$("#ok").click(function() {	
+
+
+		//Sencillo
+		var name = $("#txtbox").val();
+		var desc = $("#txtarea").val();
+		
+		var scale = '';
+		
+		//Tamanho do Símbolo
+		var szsld = $('#sencsizeslider').slider("option", "value");
+		var size = '<Size>' + szsld + '</Size';
+		//Transparencia
+		var opac = $('#senctranspslider').slider("option", "value");
+		var transpoint = '<Opacity>' + opac + '</Opacity>';
+		var transline = '<CssParameter name="stroke-opacity">' + opac + '</CssParameter>'
+		var transpol = '<CssParameter name="fill-opacity">' + opac + '</CssParameter>'
+		//Cor do Símbolo		
+		var colfill = $("#collorpicker_pickersencrell .colpick_new_color").css('backgroundColor');
+		var parafill = '<CssParameter name="fill">' + colfill +'</CssParameter>';
+		var fill; 	
+		
+		//Cor da borda do Símbolo
+		var colstk = $("#collorpicker_pickersencbord .colpick_new_color").css('backgroundColor');
+		var widthstk = $('#sencstrokeslider').slider("option", "value");
+		var das = '';
+		var ar = '';
+			//Pontilhado
+			if ($(".dash option:selected").val() != undefined && $(".dash option:selected").val() != "-1")das+=$(".dash option:selected").val();
+			if ($(".array option:selected").val() != undefined && $(".array option:selected").val() != "-1")ar+=$(".array option:selected").val();
+			var dasarstk;
+			if ($("#dashline").prop('checked')) {
+				dasarstk = '<CssParameter name="stroke-dasharray">' + das + ' ' +ar + '</CssParameter>';
+			} else {
+				das = '';
+				ar = '';
+				dasarstk = '';
+			};
+			if ($("#dashlinecell").prop('checked')) {
+				dasarstk = '<CssParameter name="stroke-dasharray">' + das + ' ' +ar + '</CssParameter>';
+			} else {
+				das = '';
+				ar = '';
+				dasarstk = '';
+			};
+		var parastk = '<CssParameter name="stroke">' + colstk + '</CssParameter><CssParameter name="stroke-width">' + widthstk + '</CssParameter>';		
+		var stk = '<Stroke>' + parastk + transline + dasarstk + '</Stroke>';
+		
+		//Tipo de símbolo
+		var type = ''; //tomar cuidado com aspas. Se uma vem "" no if, a variavel tem que estar com '' e vice versa
+		if ($("#symbsenc option:selected").val() != undefined && $("#symbsenc option:selected").val() != "-1")type+="<WellKnownName>"+$("#symbsenc option:selected").val()+"</WellKnownName>";
+		//Angulo do simbolo
+		var rotation = '';
+		if ($("#symbsenc option:selected").text() == "Diamond") {
+			rotation = 45;
+		} else {
+			rotation = 0;
+		};
+		var graphic;	
+		
+		//Controle de Escala
+		//variáveis sendo declaradas como vazias para serem preenchidas dentro nos if's
+		if ($(".escalamin option:selected").val() != undefined && $(".escalamin option:selected").val() != "-1")scale+='<MinScaleDenominator>'+$(".escalamin option:selected").val()+'</MinScaleDenominator>';
+		if ($(".escalamax option:selected").val() != undefined && $(".escalamax option:selected").val() != "-1")scale+='<MaxScaleDenominator>'+$(".escalamax option:selected").val()+'</MaxScaleDenominator>';
+		
+		
+//------------------------------------		
+		//Sencillo Filha		
+		var scalef = '';
+		
+		//Tamanho do Símbolo
+		var szsldf = $('#sencsizesliderfilha').slider("option", "value");
+		var sizef = '<Size>' + szsldf + '</Size';
+		//Transparencia
+		var opacf = $('#senctranspsliderfilha').slider("option", "value");
+		var transpointf = '<Opacity>' + opacf + '</Opacity>';
+		var translinef = '<CssParameter name="stroke-opacity">' + opacf + '</CssParameter>'
+		var transpolf = '<CssParameter name="fill-opacity">' + opacf + '</CssParameter>'
+		//Cor do Símbolo		
+		var colfillf = $("#collorpicker_pickersencrellfilha .colpick_new_color").css('backgroundColor');
+		var parafillf = '<CssParameter name="fill">' + colfillf +'</CssParameter>';
+		var fillf; 	
+		
+		//Cor da borda do Símbolo
+		var colstkf = $("#collorpicker_pickersencbordfilha .colpick_new_color").css('backgroundColor');
+		var widthstkf = $('#sencstrokesliderfilha').slider("option", "value");
+		var dasf = '';
+		var arf = '';
+			//Pontilhado
+			if ($(".dashfilha option:selected").val() != undefined && $(".dashfilha option:selected").val() != "-1")dasf+=$(".dashfilha option:selected").val();
+			if ($(".arrayfilha option:selected").val() != undefined && $(".arrayfilha option:selected").val() != "-1")arf+=$(".arrayfilha option:selected").val();
+			var dasarstkf;
+			if ($("#dashlinefilhafilha").prop('checked')) {
+				dasarstkf = '<CssParameter name="stroke-dasharray">' + dasf + ' ' + arf + '</CssParameter>';
+			} else {
+				dasf = '';
+				arf = '';
+				dasarstkf = '';
+			};
+			if ($("#dashlinecellfilha").prop('checked')) {
+				dasarstkf = '<CssParameter name="stroke-dasharray">' + dasf + ' ' +arf + '</CssParameter>';
+			} else {
+				dasf = '';
+				arf = '';
+				dasarstkf = '';
+			};
+		var parastkf = '<CssParameter name="stroke">' + colstkf + '</CssParameter><CssParameter name="stroke-width">' + widthstkf + '</CssParameter>';		
+		var stkf = '<Stroke>' + parastkf + translinef + dasarstkf + '</Stroke>';
+		
+		//Tipo de símbolo
+		var typef = ''; //tomar cuidado com aspas. Se uma vem "" no if, a variavel tem que estar com '' e vice versa
+		if ($("#symbsencfilha option:selected").val() != undefined && $("#symbsencfilha option:selected").val() != "-1")typef+="<WellKnownName>"+$("#symbsencfilha option:selected").val()+"</WellKnownName>";
+		//Angulo do simbolo
+		var rotationf = '';
+		if ($("#symbsencfilha option:selected").text() == "Diamond") {
+			rotation = 45;
+		} else {
+			rotation = 0;
+		};
+		var graphicf;	
+		
+		//Controle de Escala
+		//variáveis sendo declaradas como vazias para serem preenchidas dentro nos if's
+		if ($(".escalaminfilha option:selected").val() != undefined && $(".escalaminfilha option:selected").val() != "-1")scalef+='<MinScaleDenominator>'+$(".escalaminfilha option:selected").val()+'</MinScaleDenominator>';
+		if ($(".escalamaxfilha option:selected").val() != undefined && $(".escalamaxfilha option:selected").val() != "-1")scalef+='<MaxScaleDenominator>'+$(".escalamaxfilha option:selected").val()+'</MaxScaleDenominator>';		
+//------------------------------------	
+		
+		var fieldcat;
+		var colorAmp;
+		var cell1;
+		var cell2;
+		var cell3;
+		var cell4;
+		var cell5;
+		
+		//Tamanho do Símbolo
+		var szsldcell1 = $('#sencsizesliderfilha').slider("option", "value");
+		var sizecell1 = '<Size>' + szsldcell1 + '</Size';
+		//Transparencia
+		var opaccell1 = $('#senctranspsliderfilha').slider("option", "value");
+		var transpointcell1 = '<Opacity>' + opaccell1 + '</Opacity>';
+		var translinecell1= '<CssParameter name="stroke-opacity">' + opaccell1 + '</CssParameter>'
+		var transpolcell1 = '<CssParameter name="fill-opacity">' + opaccell1 + '</CssParameter>'
+		//Cor do Símbolo		
+		var colfillcell1 = $("#collorpicker_pickersencrellfilha .colpick_new_color").css('backgroundColor');
+		var parafillcell1 = '<CssParameter name="fill">' + colfillcell1 +'</CssParameter>';
+		var fillcell1; 	
+		
+		//Cor da borda do Símbolo
+		var colstkcell1 = $("#collorpicker_pickersencbordfilha .colpick_new_color").css('backgroundColor');
+		var widthstkcell1 = $('#sencstrokesliderfilha').slider("option", "value");
+		var dascell1 = '';
+		var arcell1 = '';
+			//Pontilhado
+			if ($(".dashfilha option:selected").val() != undefined && $(".dashfilha option:selected").val() != "-1")dascell1+=$(".dashfilha option:selected").val();
+			if ($(".arrayfilha option:selected").val() != undefined && $(".arrayfilha option:selected").val() != "-1")arcell1+=$(".arrayfilha option:selected").val();
+			var dasarstkcell1;
+			if ($("#dashlinefilhafilha").prop('checked')) {
+				dasarstkcell1 = '<CssParameter name="stroke-dasharray">' + dascell1 + ' ' + arcell1 + '</CssParameter>';
+			} else {
+				dascell1 = '';
+				arcell1 = '';
+				dasarstkcell1 = '';
+			};
+			if ($("#dashlinecellfilha").prop('checked')) {
+				dasarstkcell1 = '<CssParameter name="stroke-dasharray">' + dascell1 + ' ' +arcell1 + '</CssParameter>';
+			} else {
+				dascell1 = '';
+				arcell1 = '';
+				dasarstkcell1 = '';
+			};
+		var parastkcell1 = '<CssParameter name="stroke">' + colstkcell1 + '</CssParameter><CssParameter name="stroke-width">' + widthstkcell1 + '</CssParameter>';		
+		var stkcell1 = '<Stroke>' + parastkcell1 + translinecell1 + dasarstkcell1 + '</Stroke>';
+		
+		
+//------------------------------------	
+			
+		
+		//Bubble		
+		var fieldbub = $("#bubcolumbox").val();			
+		var cellbubmin = $("#bubcellboxmin").val();
+		var bubcampomin = '<ogc:Filter><ogc:PropertyIsLessThan><ogc:PropertyName>' + fieldbub + '</ogc:PropertyName>'+
+			'<ogc:Literal>' + cellbubmin + '</ogc:Literal></ogc:PropertyIsLessThan></ogc:Filter>';		
+		var cellbubmed = $("#bubcellboxmed").val();		
+		var bubcampomed = '<ogc:Filter><ogc:And><ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyName>' + fieldbub + '</ogc:PropertyName>'+
+			'<ogc:Literal>' + cellbubmin + '</ogc:Literal></ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyIsLessThan>'+
+			'<ogc:PropertyName>' + fieldbub + '</ogc:PropertyName><ogc:Literal>' + cellbubmed + '</ogc:Literal></ogc:PropertyIsLessThan></ogc:And></ogc:Filter>';			
+		var cellbubmax = $("#bubcellboxmax").val();
+		var bubcampomax = '<ogc:Filter><ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyName>' + fieldbub + '</ogc:PropertyName>'+
+			'<ogc:Literal>' + cellbubmax + '</ogc:Literal></ogc:PropertyIsGreaterThanOrEqualTo></ogc:Filter>';
+		var bubstk = $('#bubstrokeslider').slider("option", "value");
+		var bubopac = $('#bubtranspslider').slider("option", "value");
+		var bilbo = $("#collorpicker_pickerbubrell .colpick_new_color").css('backgroundColor');
+		var baggins = $("#collorpicker_pickerbubbord .colpick_new_color").css('backgroundColor');	
+		var hobbit = '<CssParameter name="fill">' + bilbo +'</CssParameter>';
+		var gandalf = '<Fill>' + hobbit + '</Fill>';		
+		var shire = '<CssParameter name="stroke">' + baggins + '</CssParameter><CssParameter name="stroke-width">' + bubstk + '</CssParameter>';
+		var stkbub = '<Stroke>' + shire + '</Stroke>';			
+		var minsize = $('#bubminslider').slider("option", "value");
+		var maxsize = $('#bubmaxslider').slider("option", "value");		
+		var sizemin = '<Size>' + minsize + '</Size>';
+		var sizemax = '<Size>' + maxsize + '</Size>';	
+		var sizemed = '<Size>' + (minsize + maxsize)/2 + '</Size>'; 
+		var graphicbubmin = '<Graphic><Mark><WellKnownName>circle</WellKnownName>' + gandalf + stkbub +'</Mark>' + transpoint + sizemin + '</Graphic>';
+		var graphicbubmed = '<Graphic><Mark><WellKnownName>circle</WellKnownName>' + gandalf + stkbub +'</Mark>' + transpoint + sizemed + '</Graphic>';
+		var graphicbubmax =	'<Graphic><Mark><WellKnownName>circle</WellKnownName>' + gandalf + stkbub +'</Mark>' + transpoint + sizemax + '</Graphic>';
+		
+//------------------------------------
+		
+		//Bubble Filha		
+		var fieldbubf = $("#bubcolumboxfilha").val();			
+		var cellbubminf = $("#bubcellboxminfilha").val();
+		var bubcampominf = '<ogc:Filter><ogc:PropertyIsLessThan><ogc:PropertyName>' + fieldbubf + '</ogc:PropertyName>'+
+			'<ogc:Literal>' + cellbubminf + '</ogc:Literal></ogc:PropertyIsLessThan></ogc:Filter>';		
+		var cellbubmedf = $("#bubcellboxmedfilha").val();		
+		var bubcampomedf = '<ogc:Filter><ogc:And><ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyName>' + fieldbubf + '</ogc:PropertyName>'+
+			'<ogc:Literal>' + cellbubminf + '</ogc:Literal></ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyIsLessThan>'+
+			'<ogc:PropertyName>' + fieldbubf + '</ogc:PropertyName><ogc:Literal>' + cellbubmedf + '</ogc:Literal></ogc:PropertyIsLessThan></ogc:And></ogc:Filter>';			
+		var cellbubmaxf = $("#bubcellboxmaxfilha").val();
+		var bubcampomaxf = '<ogc:Filter><ogc:PropertyIsGreaterThanOrEqualTo><ogc:PropertyName>' + fieldbubf + '</ogc:PropertyName>'+
+			'<ogc:Literal>' + cellbubmaxf + '</ogc:Literal></ogc:PropertyIsGreaterThanOrEqualTo></ogc:Filter>';
+		var bubstkf = $('#bubstrokesliderfilha').slider("option", "value");
+		var bubopacf = $('#bubtranspsliderfilha').slider("option", "value");
+		var bilbof = $("#collorpicker_pickerbubrellfilha .colpick_new_color").css('backgroundColor');
+		var bagginsf = $("#collorpicker_pickerbubbordfilha .colpick_new_color").css('backgroundColor');	
+		var hobbitf = '<CssParameter name="fill">' + bilbof +'</CssParameter>';
+		var gandalff = '<Fill>' + hobbitf + '</Fill>';		
+		var shiref = '<CssParameter name="stroke">' + bagginsf + '</CssParameter><CssParameter name="stroke-width">' + bubstkf + '</CssParameter>';
+		var stkbubf = '<Stroke>' + shiref + '</Stroke>';			
+		var minsizef = $('#bubminsliderfilha').slider("option", "value");
+		var maxsizef = $('#bubmaxsliderfilha').slider("option", "value");		
+		var sizeminf = '<Size>' + minsizef + '</Size>';
+		var sizemaxf = '<Size>' + maxsizef + '</Size>';	
+		var sizemedf = '<Size>' + (minsizef + maxsizef)/2 + '</Size>'; 
+		var graphicbubminf = '<Graphic><Mark><WellKnownName>circle</WellKnownName>' + gandalff + stkbubf +'</Mark>' + transpointf + sizeminf + '</Graphic>';
+		var graphicbubmedf = '<Graphic><Mark><WellKnownName>circle</WellKnownName>' + gandalff + stkbubf +'</Mark>' + transpointf + sizemedf + '</Graphic>';
+		var graphicbubmaxf =	'<Graphic><Mark><WellKnownName>circle</WellKnownName>' + gandalff + stkbubf +'</Mark>' + transpointf + sizemaxf + '</Graphic>';
+		
+//------------------------------------		
+		
+		//Tipo de Simbolizaçao			
+		if ($("#radio :radio:checked + label").text() == "Simple") {	
+			bubbles = '';
+			categorias = '';
+			if ($("#chggrp option:selected").val() == "puntos") {
+				fill = '<Fill>' + parafill + '</Fill>';
+				stk = '<Stroke>' + parastk + dasarstk + '</Stroke>';
+				graphic = '<Graphic><Mark>' + type + fill + stk +'</Mark>' + transpoint + size + '<Rotation>' + rotation + '</Rotation></Graphic>';	
+				sldsymb = '<PointSymbolizer>' + graphic + '</PointSymbolizer>';
+				simples = '<Rule><Name>' + name + '</Name><Title></Title>' + scale + sldsymb + '</Rule>';
+			}
+			if ($("#chggrp option:selected").val() == "lineas") {
+				bubbles = '';
+				stk = '<Stroke>' + parastk + transline + dasarstk + '</Stroke>';
+				graphic = stk;
+				sldsymb = '<LineSymbolizer>' + graphic + '</LineSymbolizer>';
+				simples = '<Rule><Name>' + name + '</Name><Title></Title>' + scale + sldsymb + '</Rule>';
+			}
+			if ($("#chggrp option:selected").val() == "poligonos") {
+				bubbles = '';
+				fill = '<Fill>' + parafill + transpol + '</Fill>';
+				stk = '<Stroke>' + parastk + transline + dasarstk + '</Stroke>';
+				graphic = fill + stk;
+				sldsymb = '<PolygonSymbolizer>' + graphic + '</PolygonSymbolizer>';
+				simples = '<Rule><Name>' + name + '</Name><Title></Title>' + scale + sldsymb + '</Rule>';
+			}			
+		}		
+		if ($("#radio :radio:checked + label").text() == "Bubble") {
+			simples = '';
+			transline = '';
+//			stk = '<Stroke>' + shire + '</Stroke>';		????
+			transpoint = '<Opacity>' + bubopac + '</Opacity>';
+			bubbles = '<Rule><Name>' + name + '</Name><Title></Title>' + bubcampomin + scale + '<PointSymbolizer>' + graphicbubmin + '</PointSymbolizer></Rule>'+
+			'<Rule><Name>' + name + '</Name><Title></Title>' + bubcampomed + scale + '<PointSymbolizer>' + graphicbubmed + '</PointSymbolizer></Rule>'+
+			'<Rule><Name>' + name + '</Name><Title></Title>' + bubcampomax + scale + '<PointSymbolizer>' + graphicbubmax + '</PointSymbolizer></Rule>';
+		};	
+		
+		
+//------------------------------------
+		//Tipo de Simbolizaçao	Filha
+		if ($("#addnsc:checkbox").prop('checked')) {			
+			if ($("#radiofilha :radio:checked + label").text() == "Simple") {	
+				bubblesf = '';
+				categoriasf = '';
+				if ($("#chggrp option:selected").val() == "puntos") {
+					fillf = '<Fill>' + parafillf + '</Fill>';
+					stkf = '<Stroke>' + parastkf + dasarstkf + '</Stroke>';
+					graphicf = '<Graphic><Mark>' + typef + fillf + stkf +'</Mark>' + transpointf + sizef + '<Rotation>' + rotationf + '</Rotation></Graphic>';	
+					sldsymbf = '<PointSymbolizer>' + graphicf + '</PointSymbolizer>';
+					simplesf = '<Rule><Name>' + name + '</Name><Title></Title>' + scalef + sldsymbf + '</Rule>';
+				}
+				if ($("#chggrp option:selected").val() == "lineas") {
+					stkf = '<Stroke>' + parastkf + translinef + dasarstkf + '</Stroke>';
+					graphicf = stkf;
+					sldsymbf = '<LineSymbolizer>' + graphicf + '</LineSymbolizer>';
+					simplesf = '<Rule><Name>' + name + '</Name><Title></Title>' + scalef + sldsymbf + '</Rule>';
+				}
+				if ($("#chggrp option:selected").val() == "poligonos") {
+					fillf = '<Fill>' + parafillf + transpolf + '</Fill>';
+					stkf = '<Stroke>' + parastkf + translinef + dasarstkf + '</Stroke>';
+					graphicf = fillf + stkf;
+					sldsymbf = '<PolygonSymbolizer>' + graphicf + '</PolygonSymbolizer>';
+					simplesf = '<Rule><Name>' + name + '</Name><Title></Title>' + scalef + sldsymbf + '</Rule>';
+				}			
+			}		
+			if ($("#radiofilha :radio:checked + label").text() == "Bubble") {
+				simplesf = '';
+				translinef = '';
+				transpointf = '<Opacity>' + bubopacf + '</Opacity>';
+				bubblesf = '<Rule><Name>' + name + '</Name><Title></Title>' + bubcampominf + scalef + '<PointSymbolizer>' + graphicbubminf + '</PointSymbolizer></Rule>'+
+				'<Rule><Name>' + name + '</Name><Title></Title>' + bubcampomedf + scalef + '<PointSymbolizer>' + graphicbubmedf + '</PointSymbolizer></Rule>'+
+				'<Rule><Name>' + name + '</Name><Title></Title>' + bubcampomaxf + scalef + '<PointSymbolizer>' + graphicbubmaxf + '</PointSymbolizer></Rule>';
+			};		
+		} else {
+			($("#addnsc:checkbox").prop('unchecked'))	
+				simplesf = '';
+				categoriasf = '';
+				bubblesf = '';
+		}; 
+
+//------------------------------------
+					
+		//Label			
+		var lblc = $("#collorpicker_picker .colpick_new_color").css('backgroundColor');
+		var lblfill = '<CssParameter name="font-colour">' + lblc + '</CssParameter>'
+		//Font Weight
+		var lblw;		
+		if ($("#checklblN:checkbox").prop('checked')) {
+			lblw = '<CssParameter name="font-weight">bold</CssParameter>';
+		} 
+		else if ($("#checklblI:checkbox").prop('checked')) {
+			lblw = '<CssParameter name="font-weight">italic</CssParameter>';
+		}
+		else if ($("#checklblS:checkbox").prop('checked')) {
+			lblw = '<CssParameter name="font-weight">oblique</CssParameter>';
+		}
+		else {
+			lblw = '<CssParameter name="font-weight">normal</CssParameter>';
+		};
+		//Font Size
+		var lbltam = '';
+		if ($("#lblsize option:selected").val() != undefined && $("#lblsize option:selected").val() != "-1")lbltam+='<CssParameter name="font-size">'+$("#lblsize option:selected").val()+'</CssParameter>';
+		//Font Family
+		var family = '';
+		if ($("#lblfamily option:selected").val() != undefined && $("#lblfamily option:selected").val() != "-1")family+='<CssParameter name="font-family">'+$("#lblfamily option:selected").val()+'</CssParameter>';
+		var font = '<Font>' + family + lbltam + '<CssParameter name="font-style">normal</CssParameter>' + lblw + lblfill + '</Font>';
+		
+		var columlbltxt = $("#lblcolumbox").val();
+		var columlbl = '<Label>' + columlbltxt + '</Label>';
+		var celllbltxt = $("#lblcellbox").val();
+		//Check Label Escala
+		var lblscl = '';
+		if ($("#escalaminlbl option:selected").val() != undefined && $("#escalaminlbl option:selected").val() != "-1")lblscl+="<MinScaleDenominator>"+$("#escalaminlbl option:selected").val()+"</MinScaleDenominator>";
+		if ($("#escalamaxlbl option:selected").val() != undefined && $("#escalamaxlbl option:selected").val() != "-1")lblscl+="<MaxScaleDenominator>"+$("#escalamaxlbl option:selected").val()+"</MaxScaleDenominator>";		
+		//Check Label
+		if ($("#checklbltype:checkbox").prop('checked')) {			
+			lbl = '<Rule><Name></Name><ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>' + columlbltxt + '</ogc:PropertyName>'+  
+				'<ogc:Literal>' + celllbltxt + '</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>' + lblscl + '<TextSymbolizer>' + columlbl + font + 
+				'<LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>0.5</AnchorPointX><AnchorPointY>0.0</AnchorPointY></AnchorPoint>'+
+				'<Displacement><DisplacementX>0</DisplacementX><DisplacementY>5</DisplacementY></Displacement></PointPlacement></LabelPlacement>'+
+				'</TextSymbolizer></Rule>';
+		} else {
+			($("#checklbltype:checkbox").prop('unchecked'))	
+			lbl = '';			
+		} 
+		
+		//A outra maneira de inserir um lbl (repetindo a simbolizacao)
+//		if ($("#showlblscl:checkbox").prop('checked')) {	
+//			lbl = '';
+//			lbllbl = '<Rule><Name></Name><ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>' + columlbltxt + '</ogc:PropertyName>'+  
+//			'<ogc:Literal>' + celllbltxt + '</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter><Name></Name><TextSymbolizer>' + columlbl + font + 
+//			'<LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>0.5</AnchorPointX><AnchorPointY>0.0</AnchorPointY></AnchorPoint>'+
+//			'<Displacement><DisplacementX>0</DisplacementX><DisplacementY>5</DisplacementY></Displacement></PointPlacement></LabelPlacement>'+
+//			'</TextSymbolizer></Rule>';
+//			lblnewrule = '<FeatureTypeStyle><Rule>' + lblscl + lbllbl + '</Rule></FeatureTypeStyle>';
+////			lblnewrule = '<FeatureTypeStyle><Rule><Name>' + name + '</Name>' + lblscl + sldsymb + lbllbl + '</Rule></FeatureTypeStyle>';
+//		} else {
+//			($("#showlblscl:checkbox").prop('unchecked'))
+//			lbllbl = '';
+//			lblnewrule = '';
+//		};	
+		
+//------------------------------
+		
+		//Label	Filha		
+		var lblcf = $("#collorpicker_pickerfilha .colpick_new_color").css('backgroundColor');
+		var lblfillf = '<CssParameter name="font-colour">' + lblcf + '</CssParameter>'
+		//Font Weight
+		var lblwf;		
+		if ($("#checklblNfilha:checkbox").prop('checked')) {
+			lblwf = '<CssParameter name="font-weight">bold</CssParameter>';
+		} 
+		else if ($("#checklblIfilha:checkbox").prop('checked')) {
+			lblwf = '<CssParameter name="font-weight">italic</CssParameter>';
+		}
+		else if ($("#checklblSfilha:checkbox").prop('checked')) {
+			lblwf = '<CssParameter name="font-weight">oblique</CssParameter>';
+		}
+		else {
+			lblwf = '<CssParameter name="font-weight">normal</CssParameter>';
+		};
+		//Font Size
+		var lbltamf = '';
+		if ($("#lblsizefilha option:selected").val() != undefined && $("#lblsizefilha option:selected").val() != "-1")lbltamf+='<CssParameter name="font-size">'+$("#lblsizefilha option:selected").val()+'</CssParameter>';
+		//Font Family
+		var familyf = '';
+		if ($("#lblfamilyfilha option:selected").val() != undefined && $("#lblfamilyfilha option:selected").val() != "-1")familyf+='<CssParameter name="font-family">'+$("#lblfamily option:selected").val()+'</CssParameter>';
+		var fontf = '<Font>' + familyf + lbltamf + '<CssParameter name="font-style">normal</CssParameter>' + lblwf + lblfillf + '</Font>';
+		
+		var columlbltxtf = $("#lblcolumboxfilha").val();
+		var columlblf = '<Label>' + columlbltxtf + '</Label>';
+		var celllbltxtf = $("#lblcellboxfilha").val();
+		//Check Label Escala
+		var lblsclf = '';
+		if ($("#escalaminlblfilha option:selected").val() != undefined && $("#escalaminlblfilha option:selected").val() != "-1")lblsclf+="<MinScaleDenominator>"+$("#escalaminlblfilha option:selected").val()+"</MinScaleDenominator>";
+		if ($("#escalamaxlblfilha option:selected").val() != undefined && $("#escalamaxlblfilha option:selected").val() != "-1")lblsclf+="<MaxScaleDenominator>"+$("#escalamaxlblfilha option:selected").val()+"</MaxScaleDenominator>";		
+		//Check Label
+		if ($("#checklbltypefilha:checkbox").prop('checked')) {			
+			lblf = '<Rule><Name></Name><ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>' + columlbltxtf + '</ogc:PropertyName>'+  
+				'<ogc:Literal>' + celllbltxtf + '</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>' + lblsclf + '<TextSymbolizer>' + columlblf + fontf + 
+				'<LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>0.5</AnchorPointX><AnchorPointY>0.0</AnchorPointY></AnchorPoint>'+
+				'<Displacement><DisplacementX>0</DisplacementX><DisplacementY>5</DisplacementY></Displacement></PointPlacement></LabelPlacement>'+
+				'</TextSymbolizer></Rule>';
+		} else {
+			($("#checklbltype:checkbox").prop('unchecked'))	
+			lblf = '';			
+		} 
+		
+//------------------------------		
+		
+		var sld = '<?xml version="1.0" encoding="UTF-8"?>';
+		sld += '<StyledLayerDescriptor version="1.0.0"' + ' '; 
+		sld +=                       'xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"' + ' '; 
+		sld +=                       'xmlns="http://www.opengis.net/sld"' + ' '; 
+		sld +=                       'xmlns:ogc="http://www.opengis.net/ogc"' + ' '; 
+		sld +=                       'xmlns:xlink="http://www.w3.org/1999/xlink"' + ' ';  
+		sld +=                       'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'
+		sld +=  '<NamedLayer>';
+		sld +=    '<Name>'+ name +'</Name>';		
+		sld += 		'<UserStyle>';
+		sld +=			'<Title></Title>';
+		sld +=			'<Abstract>'+ desc +'</Abstract>';
+		sld +=				'<FeatureTypeStyle>';
+		sld +=					simples;
+//		sld +=                  categorias;
+		sld +=					bubbles;
+		sld +=    					lbl;
+		sld +=					simplesf;
+//		sld +=                  categoriasf;
+		sld +=					bubblesf;
+		sld +=    					lblf;
+		sld +=  			'</FeatureTypeStyle>';
+		sld +=    		'</UserStyle>';
+		sld += 		'</NamedLayer>';
+		sld +=    '</StyledLayerDescriptor>';
+		
+		alert(sld);
+//		$.post('http://giscorp.sitep.com/generate_sld.php',{STYLE:sld},function(data){
+//		    alert(data);
+//		});
+//		alert($("#radiofilha :radio:checked").prop('id'));
+//		alert(graphicbubmin);
+//		alert($('#sencstrokeslidercell').slider("option", "value"));
+//		alert(dois);
+//		alert($("#catcolumbox").val());
+//		alert($("#txtcellbox").val());
+//		alert(rotation);
+//		alert(desc);	
+//		/*alert($("#bubble[type=radio]").attr('disabled'));*/
+//		alert(grp);
+//		alert($("#txtbox").val());
+//		alert($("#symbsenc option:selected").text());
+//		alert($("#chggrp option:selected").text());
+//		alert($("#chggrp option:selected").val());
+//		alert ($('#picker').colpick().pickersencrell('text'));	
+//		alert($("#txtarea").val());
+//		alert($("#radio :radio:checked").prop('id'));
+//		alert($('#sencstrokeslider').slider("option", "value"));
+//		alert($("#checklbltype:checkbox").prop('checked'));
+//		alert($(".editlbl").button('enable'));
+//		alert($('#pickersencrell').ColorPickerSetColor(color));
+//		alert($('#colorSelector input').val('#pickersencrell' + hex));		
+//		alert($("#collorpicker_pickerbubrell .colpick_new_color").css('backgroundColor'));
+	});
+});
+
+// Janela Simbolizacao
+$(function() {
+	$("#simbwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+
+	$("#simbwindowfilha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+});
+
+// Label Options
+$(function() {
+	$("#editlblwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 400
+	});
+	$("#editlblwindowfilha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 400
+	});	
+
+});
+
+// Edit Symbol Sencillo
+$(function() {
+	$("#editsymb").click(function() {
+
+		if ($("#sencillo:checked").val() == "on")
+			$("#editsymbwindow").dialog("open");
+		else if ($("#categorias:checked").val() == "on")
+			$("#editsymbwindow2").dialog("open");
+		else if ($("#bubble:checked").val() == "on")
+			$("#editsymbwindow3").dialog("open");
+		else if ($("#cluster:checked").val() == "on")
+			$("#editsymbwindow4").dialog("open");
+		else if ($("#mapasdecalor:checked").val() == "on")
+			$("#editsymbwindow5").dialog("open");
+	});
+	
+	$("#editsymbfilha").click(function() {
+
+		if ($("#sencillofilha:checked").val() == "on")
+			$("#editsymbwindowfilha").dialog("open");
+		else if ($("#categoriasfilha:checked").val() == "on")
+			$("#editsymbwindow2filha").dialog("open");
+		else if ($("#bubblefilha:checked").val() == "on")
+			$("#editsymbwindow3filha").dialog("open");		
+	});
+});
+
+$(function() {
+	$("#editcell1").click(function() {
+		$("#editcellwindow").dialog("open");
+	});
+	$("#editcell1filha").click(function() {
+		$("#editcellwindowfilha").dialog("open");
+	});
+	$("#editcell2").click(function() {
+		$("#editcellwindow2").dialog("open");
+	});
+	$("#editcell3").click(function() {
+		$("#editcellwindow3").dialog("open");
+	});
+	$("#editcell4").click(function() {
+		$("#editcellwindow4").dialog("open");
+	});
+	$("#editcell5").click(function() {
+		$("#editcellwindow5").dialog("open");
+	});
+});
+
+function ocultarSimbWindows() {
+
+	$("#editsymbwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#editsymbwindowfilha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+
+	$("#editsymbwindow2").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 260
+	});
+
+	$("#editsymbwindow2filha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 260
+	});
+	
+	$("#editcellwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#editcellwindowfilha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#editcellwindow2").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+		
+	$("#editcellwindow3").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#editcellwindow4").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#editcellwindow5").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+
+	$("#editsymbwindow3").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#editsymbwindow3filha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+
+	$("#propbubwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+	
+	$("#propbubwindowfilha").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+
+	$("#editsymbwindow4").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 400
+	});
+
+	$("#editsymbwindow5").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 250
+	});
+}
+
+$(function() {	
+
+	$("#oksenc").click(function() {
+		$("#editsymbwindow").dialog("close");
+	});
+	
+	$("#oksencfilha").click(function() {
+		$("#editsymbwindowfilha").dialog("close");
+	});
+	
+
+	$("#okcat").click(function() {
+		$("#editsymbwindow2").dialog("close");
+	});
+	
+	$("#okcatfilha").click(function() {
+		$("#editsymbwindow2filha").dialog("close");
+	});
+
+	$("#okcat1").click(function() {
+		$("#editcellwindow").dialog("close");
+	});
+	
+	$("#okcat1filha").click(function() {
+		$("#editcellwindowfilha").dialog("close");
+	});
+
+	$("#okbub").click(function() {
+		$("#editsymbwindow3").dialog("close");
+	});
+	
+	$("#okbubfilha").click(function() {
+		$("#editsymbwindow3filha").dialog("close");
+	});
+
+	$("#propbub").click(function() {
+		$("#propbubwindow").dialog("open");
+	});
+	
+	$("#propbubfilha").click(function() {
+		$("#propbubwindowfilha").dialog("open");
+	});
+
+	$("#okbubwindow").click(function() {
+		$("#propbubwindow").dialog("close");
+	});
+	
+	$("#okbubwindowfilha").click(function() {
+		$("#propbubwindowfilha").dialog("close");
+	});	
+
+	$("#okclus").click(function() {
+		$("#editsymbwindow4").dialog("close");
+	});
+
+	$("#okmc").click(function() {
+		$("#editsymbwindow5").dialog("close");
+	});
+});
+
+// Botao
+$(function() {
+	$("button").button().click(function(event) {
+		event.preventDefault();
+	});
+});
+
+$(".editlbl").button({
+	disabled : true
+});
+
+$("#checklbltype").prop({
+	checked : false
+});
+
+$(function() {
+	$("button").button().click(function(event) {
+		event.preventDefault();
+	});
+});
+
+$(".editlblfilha").button({
+	disabled : true
+});
+
+$("#checklbltypefilha").prop({
+	checked : false
+});
+
+// Radios Janela Sim
+$(function() {
+	$("#radio").buttonset();
+	
+	$("#radiofilha").buttonset();
+});
+
+// Checkboxes Nova escala, Lable e Tipolbl
+$(function() {
+	$("#checknesc").button();
+	$("#format").buttonset();
+
+	$("#checklbltype").button();
+	$("#format").buttonset();
+	
+	$("#checklbltypefilha").button();
+	$("#format").buttonset();
+
+	$("#checklblN").button();
+	$("#checklblI").button();
+	$("#checklblS").button();
+	$("#format").buttonset();
+	
+	$("#checklblNfilha").button();
+	$("#checklblIfilha").button();
+	$("#checklblSfilha").button();
+	$("#format").buttonset();
+
+	$("#chkapplyfilter").button();
+	$("#format").buttonset();
+
+	$("#chkfilterman").button();
+	$("#format").buttonset();
+
+	$("#sencselsymb").button();
+	$("#format").buttonset();
+
+	$("#selsecfieldcat").button();
+	$("#format").buttonset();
+
+	$("#defintervalcat").button();
+	$("#format").buttonset();
+
+	$("#calc").button();
+	$("#format").buttonset();
+
+	$("#showlblscl").button();
+	$("#format").buttonset();
+	
+	$("#showlblsclfilha").button();
+	$("#format").buttonset();
+
+	$("#dashline").button();
+	$("#format").buttonset();
+	
+	$("#dashlinefilha").button();
+	$("#format").buttonset();
+
+	$("#dashlinecell").button();
+	$("#format").buttonset();
+	
+	$("#dashlinecellfilha").button();
+	$("#format").buttonset();
+	
+	$("#checkinterval").button();
+	$("#format").buttonset();	
+	
+	/*$("#addnsc").button();
+	$("#format").buttonset();*/	
+});
+
+$(function() {
+	$("#addnsc").button();
+	$("#format").buttonset();
+});
+
+
+// Slider
+$(function() {
+	$("#transpslider").slider({
+		range : "max",
+		min : 0,
+		max : 100,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txttransp").val(ui.value);
+		}
+	});
+	$("#txttransp").val($("#transpslider").slider("value"));
+
+	$("#sencstrokeslider").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencstroke").val(ui.value);
+		}	});	
+	$("#txtsencstroke").val($("#sencstrokeslider").slider("value"));
+	
+		$("#sencstrokesliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencstrokefilha").val(ui.value);
+		}
+	});
+	$("#txtsencstrokefilha").val($("#sencstrokesliderfilha").slider("value"));
+
+	$("#sencsizeslider").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencsize").val(ui.value);
+		}
+	});
+	$("#txtsencsize").val($("#sencsizeslider").slider("value"));
+	
+		$("#sencsizesliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencsizefilha").val(ui.value);
+		}
+	});
+	$("#txtsencsizefilha").val($("#sencsizesliderfilha").slider("value"));
+
+	$("#senctranspslider").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step: 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsenctransp").val(ui.value);
+		}
+	});
+	$("#txtsenctransp").val($("#senctranspslider").slider("value"));
+	
+		$("#senctranspsliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step: 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsenctranspfilha").val(ui.value);
+		}
+	});
+	$("#txtsenctranspfilha").val($("#senctranspsliderfilha").slider("value"));
+
+	$("#bubstrokeslider").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubstroke").val(ui.value);
+		}
+	});
+	$("#txtbubstroke").val($("#bubstrokeslider").slider("value"));
+	
+	$("#bubstrokesliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubstrokefilha").val(ui.value);
+		}
+	});
+	$("#txtbubstrokefilha").val($("#bubstrokesliderfilha").slider("value"));	
+
+	$("#bubtranspslider").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step : 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubtransp").val(ui.value);
+		}
+	});
+	$("#txtbubtransp").val($("#bubtranspslider").slider("value"));
+	
+	$("#bubtranspsliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step : 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubtranspfilha").val(ui.value);
+		}
+	});
+	$("#txtbubtranspfilha").val($("#bubtranspsliderfilha").slider("value"));
+
+	$("#bubminslider").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubmin").val(ui.value);
+		}
+	});
+	$("#txtbubmin").val($("#bubminslider").slider("value"));
+	
+	$("#bubminsliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubminfilha").val(ui.value);
+		}
+	});
+	$("#txtbubminfilha").val($("#bubminsliderfilha").slider("value"));	
+
+	$("#bubmaxslider").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubmax").val(ui.value);
+		}
+	});
+	$("#txtbubmax").val($("#bubmaxslider").slider("value"));
+	
+	$("#bubmaxsliderfilha").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubmaxfilha").val(ui.value);
+		}
+	});
+	$("#txtbubmaxfilha").val($("#bubmaxsliderfilha").slider("value"));
+
+	$("#clusstrokeslider").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtclusstroke").val(ui.value);
+		}
+	});
+	$("#txtclusstroke").val($("#clusstrokeslider").slider("value"));
+
+	$("#sencstrokeslidercell").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencstrokecell").val(ui.value);
+		}
+	});
+	$("#txtsencstrokecell").val($("#sencstrokeslidercell").slider("value"));
+	
+	$("#sencstrokeslidercellfilha").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencstrokecellfilha").val(ui.value);
+		}
+	});
+	$("#txtsencstrokecellfilha").val($("#sencstrokeslidercellfilha").slider("value"));
+
+	$("#sencsizeslidercell").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencsizecell").val(ui.value);
+		}
+	});
+	$("#txtsencsizecell").val($("#sencsizeslidercell").slider("value"));
+	
+	$("#sencsizeslidercellfilha").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencsizecellfilha").val(ui.value);
+		}
+	});
+	$("#txtsencsizecellfilha").val($("#sencsizeslidercellfilha").slider("value"));
+
+
+	$("#senctranspslidercell").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step: 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsenctranspcell").val(ui.value);
+		}
+	});
+	$("#txtsenctranspcell").val($("#senctranspslidercell").slider("value"));	
+	
+	$("#senctranspslidercellfilha").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step: 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsenctranspcellfilha").val(ui.value);
+		}
+	});
+	$("#txtsenctranspcellfilha").val($("#senctranspslidercellfilha").slider("value"));	
+});
+
+// Colorpicker
+$(function() {
+	$('#picker').colpick(null, "picker");
+	
+	$('#pickerfilha').colpick(null, "pickerfilha");
+
+    $('#pickersencrell').colpick(null, "pickersencrell");
+	
+	$('#pickersencrellfilha').colpick(null, "pickersencrellfilha");
+
+	$('#pickersencbord').colpick(null, "pickersencbord");
+	
+	$('#pickersencbordfilha').colpick(null, "pickersencbordfilha");
+
+	$('#pickerbubrell').colpick(null, "pickerbubrell");
+	
+	$('#pickerbubrellfilha').colpick(null, "pickerbubrellfilha");
+
+	$('#pickerbubbord').colpick(null, "pickerbubbord");
+	
+	$('#pickerbubbordfilha').colpick(null, "pickerbubbordfilha");
+
+	$('#pickerclusrell').colpick(null, "pickerclusrell");
+
+	$('#pickerclusbord').colpick(null, "pickerclusbord");
+
+	$('#pickersencrellcell').colpick(null, "pickersencrellcell");
+	
+	$('#pickersencrellcellfilha').colpick(null, "pickersencrellcellfilha");
+
+	$('#pickersencbordcell').colpick(null, "pickersencbordcell");
+	
+	$('#pickersencbordcellfilha').colpick(null, "pickersencbordcellfilha");
+});
+
+// Add new scale
+/*$(function() {
+	$("#addnewscale").click(
+			function() {
+				if (i < 4) {
+					$("#rules").append(
+							"<h3>Rule</h3><div style='height:auto;'>"
+									+ $("#rulemaster").html() + "</div>");
+					i++;
+					if(i==4){
+//						$("#addnewscale").disable();
+					}
+					if (i > 1) {
+//						$(".cerrar").enable();
+					}
+					$("#rules").accordion("refresh");
+					definenewrule();
+				}
+			});
+});*/
+
+//$(function() {
+//	$("#rules").accordion({
+//		collapsible : true,
+//		heightStyle : "fill"
+//	});
+//});
+//$(function() {
+//	$("#addnewrule").resizable({
+//		minHeight : 140,
+//		minWidth : 200,
+//		resize : function() {
+//			$("#rules").accordion("refresh");
+//		}
+//	});
+//});
+
+// Comboboxes
+(function($) {
+	$
+			.widget(
+					"custom.combobox",
+					{
+						_create : function() {
+							this.wrapper = $("<span>").addClass(
+									"custom-combobox")
+									.insertAfter(this.element);
+							this.element.hide();
+							this._createAutocomplete();
+							this._createShowAllButton();
+						},
+						_createAutocomplete : function() {
+							var selected = this.element.children(":selected"), value = selected
+									.val() ? selected.text() : "";
+							this.input = $("<input>")
+									.appendTo(this.wrapper)
+									.val(value)
+									.attr("title", "")
+									.addClass(
+											"custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left")
+									.autocomplete({
+										delay : 0,
+										minLength : 0,
+										source : $.proxy(this, "_source")
+									}).tooltip({
+										tooltipClass : "ui-state-highlight"
+									});
+							this._on(this.input, {
+								autocompleteselect : function(event, ui) {
+									ui.item.option.selected = true;
+									this._trigger("select", event, {
+										item : ui.item.option
+									});
+								},
+								autocompletechange : ""
+							});
+						},
+						_createShowAllButton : function() {
+							var input = this.input, wasOpen = false;
+							$("<a>").attr("tabIndex", -1).attr("title",
+									"Show All Items").tooltip().appendTo(
+									this.wrapper).button({
+								icons : {
+									primary : "ui-icon-triangle-1-s"
+								},
+								text : false
+							}).removeClass("ui-corner-all").addClass(
+									"custom-combobox-toggle ui-corner-right")
+									.mousedown(
+											function() {
+												wasOpen = input.autocomplete(
+														"widget")
+														.is(":visible");
+											}).click(function() {
+										input.focus();
+										// Close if already visible
+										if (wasOpen) {
+											return;
+										}
+										// Pass empty string as value to search
+										// for, displaying all results
+										input.autocomplete("search", "");
+									});
+						},
+						_source : function(request, response) {
+							var matcher = new RegExp($.ui.autocomplete
+									.escapeRegex(request.term), "i");
+							response(this.element.children("option").map(
+									function() {
+										var text = $(this).text();
+										if (this.value
+												&& (!request.term || matcher
+														.test(text)))
+											return {
+												label : text,
+												value : text,
+												option : this
+											};
+									}));
+						},
+						_removeIfInvalid : function(event, ui) {
+							// Selected an item, nothing to do
+							if (ui.item) {
+								return;
+							}
+							// Search for a match (case-insensitive)
+							var value = this.input.val(), valueLowerCase = value
+									.toLowerCase(), valid = false;
+							this.element
+									.children("option")
+									.each(
+											function() {
+												if ($(this).text()
+														.toLowerCase() === valueLowerCase) {
+													this.selected = valid = true;
+													return false;
+												}
+											});
+							// Found a match, nothing to do
+							if (valid) {
+								return;
+							}
+							// Remove invalid value
+							this.input.val("").attr("title",
+									value + " didn't match any item").tooltip(
+									"open");
+							this.element.val("");
+							this._delay(function() {
+								this.input.tooltip("close").attr("title", "");
+							}, 2500);
+							this.input.autocomplete("instance").term = "";
+						},
+						_destroy : function() {
+							this.wrapper.remove();
+							this.element.show();
+						}
+					});
+})(jQuery);
+$(function() {
+	//$("#chggrp").combobox();
+//	$("#toggle").click(function() {
+//		$("#chggrp").toggle();
+//	});
+//	$(".escalamin").combobox();
+//	$("#toggle").click(function() {
+//		$(".escalamin").toggle();
+//	});
+//	$(".escalamax").combobox();
+//	$("#toggle").click(function() {
+//		$(".escalamax").toggle();
+//	});
+	$("#lblsize").combobox();
+	$("#toggle").click(function() {
+		$("#lblsize").toggle();
+	});
+	$("#lblsizefilha").combobox();
+	$("#toggle").click(function() {
+		$("#lblsizefilha").toggle();
+	});
+	$("#lblfamily").combobox();
+	$("#toggle").click(function() {
+		$("#lblfamily").toggle();
+	});
+	$("#lblfamilyfilha").combobox();
+	$("#toggle").click(function() {
+		$("#lblfamilyfilha").toggle();
+	});	
+//	$("#lblattr").combobox();
+//	$("#toggle").click(function() {
+//		$("#lblattr").toggle();
+//	});
+	$("#cmbselsymb").combobox();
+	$("#toggle").click(function() {
+		$("#cmbselsymb").toggle();
+	});
+	/*$("#symbsenc").combobox();
+	$("#toggle").click(function() {
+	$("#symbsenc").toggle();
+	});*/
+});
+
+// posso apagar daqui se eu quiser pois já tenho o addnewrul
+$(function() {
+	
+	$("#selfieldcat").combobox();
+	$("#toggle").click(function() {
+		$("#selfieldcat").toggle();
+	});
+
+	$("#selfieldcat2").combobox();
+	$("#toggle").click(function() {
+		$("#selfieldcat2").toggle();
+	});
+
+	$("#colorrampcat").combobox();
+	$("#toggle").click(function() {
+		$("#colorrampcat").toggle();
+	});
+});
+//$(function() {
+//	$("#normalcat").combobox();
+//	$("#toggle").click(function() {
+//		$("#normalcat").toggle();
+//	});
+//});
+//$(function() {
+//	$("#intervalcat").combobox();
+//	$("#toggle").click(function() {
+//		$("#intervalcat").toggle();
+//	});
+//});
+$(function() {
+	$("#selfieldbub").combobox();
+	$("#toggle").click(function() {
+		$("#selfieldbub").toggle();
+	});
+});
+/*$(function() {
+	$("#normalbub").combobox();
+	$("#toggle").click(function() {
+		$("#normalbub").toggle();
+	});
+});
+$(function() {
+	$("#colorrampbub").combobox();
+	$("#toggle").click(function() {
+		$("#colorrampbub").toggle();
+	});
+});
+$(function() {
+	$("#intervalbub").combobox();
+	$("#toggle").click(function() {
+		$("#intervalbub").toggle();
+	});
+});*/
+/*$(function() {
+	$("#groupclus").combobox();
+	$("#toggle").click(function() {
+		$("#groupclus").toggle();
+	});
+
+	$("#minsizeclus").combobox();
+	$("#toggle").click(function() {
+		$("#minsizeclus").toggle();
+	});
+
+	$("#maxsizeclus").combobox();
+	$("#toggle").click(function() {
+		$("#maxsizeclus").toggle();
+	});
+
+	$("#fontclus").combobox();
+	$("#toggle").click(function() {
+		$("#fontclus").toggle();
+	});
+
+	$("#mcselfield").combobox();
+	$("#toggle").click(function() {
+		$("#mcselfield").toggle();
+	});
+
+	$("#mcradio").combobox();
+	$("#toggle").click(function() {
+		$("#mcradio").toggle();
+	});
+
+	$("#mccellh").combobox();
+	$("#toggle").click(function() {
+		$("#mccellh").toggle();
+	});
+
+	$("#mccellw").combobox();
+	$("#toggle").click(function() {
+		$("#mccellw").toggle();
+	});
+
+	$("#mccolour").combobox();
+	$("#toggle").click(function() {
+		$("#mccolour").toggle();
+	});
+
+	$("#chkqrum").combobox();
+	$("#toggle").click(function() {
+		$("#chkqrum").toggle();
+	});
+
+	$("#chkqrdois").combobox();
+	$("#toggle").click(function() {
+		$("#chkqrdois").toggle();
+	});
+});*/
+
+$(function() {
+
+	// the the default base path where you installed the code
+	// normally the path is disconvered from the script with
+	// id=jquery-colorramp-script
+	// $().colorramp('cfg').path = '/js/jquery-colorramp/';
+
+	// configure a div element as a color ramp
+	$('.colorramp').colorramp();
+
+	// when the user selects a color ramp, the change event is called
+	// with the colorArray
+	$('.colorramp').change(function() {
+		$(this).colorramp('getColors', reportColors);
+	});
+
+	// output colors used in selected ramp when user clicks the report
+	// colors button
+	$('.getcolorsbut').click(function() {
+		$(this).prev('.colorramp').colorramp('getColors', reportColors);
+	});
+	//		  
+	//
+	// // function to make an array of colors, and print it to the screen nicely
+	// function reportColors(colorArray) {
+	// var buf = [];
+	// $.each(colorArray, function(){
+	// buf.push('<font color='+this+'>'+this+'</font>');
+	// });
+	// $('#selectedramp').html(buf.join(', '));
+	// }
+	$('.colorrampfilha').colorramp();
+
+	$('.colorrampfilha').change(function() {
+		$(this).colorramp('getColors', reportColors);
+	});
+
+	$('.getcolorsbut').click(function() {
+		$(this).prev('.colorrampfilha').colorramp('getColors', reportColors);
+	});
+});
+
+// $('input:checkbox[#checklbltype]').is('checked', true);
+
+// Retorna Valor do botao(enable)
+// $("#editlbl").button("disable")
+
+// $("#checklbltype").attr("autocomplete", "off");
+
+// Ativa botao através do checkbox
+//$(function() {
+//	$(".editlbl").button();
+//	$('#checklbltype').change(function() {
+//		var isChecked = $(this).prop("checked");
+//		if (isChecked)
+//			$(".editlbl").button("enable");
+//		else
+//			$(".editlbl").button("disable");
+//	});
+//});
+
+// Mostra um div através do checkbox
+$(document).ready(function() {
+	$('#chkapplyfilter').change(function() {
+		if (this.checked)
+			$('#applyfilter').show();
+		else
+			$('#applyfilter').hide();
+	});
+
+	$('#chkfilterman').change(function() {
+		if (this.checked)
+			$('#filterbox').show();
+		else
+			$('#filterbox').hide();
+	});
+	$('#sencselsymb').change(function() {
+		if (this.checked)
+			$('#sencselect').show();
+		else
+			$('#sencselect').hide();
+	});
+	$('#selsecfieldcat').change(function() {
+		if (this.checked)
+			$('#divsecfield').show();
+		else
+			$('#divsecfield').hide();
+	});
+	$('#showlblscl').change(function() {
+		if (this.checked)
+			$('#escalaslbl').show();
+		else
+			$('#escalaslbl').hide();
+	});
+	$('#showlblsclfilha').change(function() {
+		if (this.checked)
+			$('#escalaslblfilha').show();
+		else
+			$('#escalaslblfilha').hide();
+	});
+	
+	$('#dashline').change(function() {
+		if (this.checked)
+			$('#linedash').show();
+		else
+			$('#linedash').hide();
+	});	
+	$('#dashlinefilha').change(function() {
+		if (this.checked)
+			$('#linedashfilha').show();
+		else
+			$('#linedashfilha').hide();
+	});	
+	$('#dashlinecell').change(function() {
+		if (this.checked)
+			$('#linedashcell').show();
+		else
+			$('#linedashcell').hide();
+	});
+	$('#dashlinecellfilha').change(function() {
+		if (this.checked)
+			$('#linedashcellfilha').show();
+		else
+			$('#linedashcellfilha').hide();
+	});
+	
+	$('#addnsc').change(function() {
+		if (this.checked)
+			$('#rulemasterfilha').show();
+		else
+			$('#rulemasterfilha').hide();
+	});
+	definenewrule();
+});
+
+//show/hide através de um combobox
+$(document).ready(function() {
+    $('#chggrp').change(function() {
+    	//Bubble desativado quando poligono ou linha
+    	$("#radio #bubble").prop( "disabled", true );
+        $('#bubble, [for="bubble"]').prop('disabled', true).addClass("ui-button-disabled ui-state-disabled");
+        
+        $("#radiofilha #bubblefilha").prop( "disabled", true );
+        $('#bubblefilha, [for="bubblefilha"]').prop('disabled', true).addClass("ui-button-disabled ui-state-disabled");
+        
+            if ($("#chggrp option:selected").val() == "puntos") {
+                    $('#ptnstipus').show();
+                    $('#ptnstipuscell').show();
+                    
+                  //Bubble desativado quando poligono ou linha
+                    $("#radio #bubble").prop( "disabled", false );
+                    $('#bubble, [for="bubble"]').prop('disabled', false).removeClass("ui-button-disabled ui-state-disabled");
+                    $("#radio #bubble").click();
+//                    $("#radio #sencillo").click();     
+//                    $("#bubble[type=radio]").attr('disabled', false);
+                    
+                    $("#radiofilha #bubblefilha").prop( "disabled", false );
+                    $('#bubblefilha, [for="bubblefilha"]').prop('disabled', false).removeClass("ui-button-disabled ui-state-disabled");
+                    $("#radiofilha #bubblefilha").click();
+//                    $("#radio #sencillo").click();     
+//                    $("#bubble[type=radio]").attr('disabled', false);
+            }
+            else if ($("#chggrp option:selected").val() == "lineas") {
+                    $('#ptnstipus').hide();
+                    $('#ptnstipuscell').hide();
+            }
+            else if ($("#chggrp option:selected").val() == "poligonos") {
+                    $('#ptnstipus').hide();
+                    $('#ptnstipuscell').hide();
+            }
+    });
+	
+	$('#chggrp').change(function() {
+            if ($("#chggrp option:selected").val() == "puntos") {
+                    $('#ptnstipusfilha').show();
+                    $('#ptnstipuscellfilha').show();
+            }
+            else if ($("#chggrp option:selected").val() == "lineas") {
+                    $('#ptnstipusfilha').hide();
+                    $('#ptnstipuscellfilha').hide();
+            }
+            else if ($("#chggrp option:selected").val() == "poligonos") {
+                    $('#ptnstipusfilha').hide();
+                    $('#ptnstipuscellfilha').hide();
+            }
+    });
+});
+
+//????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+//$(document).ready(function() {
+//    $('#normalcat').change(function() {
+//            if ($("#normalcat option:selected").text() == "1") {                    
+//                   	$('#catcellbox2').hide();
+//            }
+//            else if ($("#normal option:selected").text() == "2"){
+//            		$('#catcellbox2').show();
+//            }
+//          else if ($("#normal option:selected").val() == "3") {
+//            		$('#catcellbox2').show();
+//            }   
+//    });
+//});		
+
+//botoes de N I e S
+$(function() {
+//$(".editlbl").button();
+$('#checklblN').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblI").button("disable");
+		$("#checklblS").button("disable");
+	}
+	else {
+		$("#checklblI").button("enable");
+		$("#checklblS").button("enable")
+	}
+});
+$('#checklblI').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblN").button("disable");
+		$("#checklblS").button("disable");
+	}
+	else {
+		$("#checklblN").button("enable");
+		$("#checklblS").button("enable")
+	}
+});
+$('#checklblS').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblI").button("disable");
+		$("#checklblN").button("disable");
+	}
+	else {
+		$("#checklblI").button("enable");
+		$("#checklblN").button("enable")
+	}
+});
+$('#checklblNfilha').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblIfilha").button("disable");
+		$("#checklblSfilha").button("disable");
+	}
+	else {
+		$("#checklblIfilha").button("enable");
+		$("#checklblSfilha").button("enable")
+	}
+});
+$('#checklblIfilha').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblNfilha").button("disable");
+		$("#checklblSfilha").button("disable");
+	}
+	else {
+		$("#checklblNfilha").button("enable");
+		$("#checklblSfilha").button("enable")
+	}
+});
+$('#checklblSfilha').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblIfilha").button("disable");
+		$("#checklblNfilha").button("disable");
+	}
+	else {
+		$("#checklblIfilha").button("enable");
+		$("#checklblNfilha").button("enable")
+	}
+});
+$('#checkinterval').change(function() {
+	if (this.checked)
+		$('#cellinter').hide();
+	else
+		$('#cellinter').show();
+});
+});
+
+//var rule = '';
+//
+//var sldsymb = $("#chggrp").change(function(){
+//	if ($("#chggrp").val() == "puntos") {
+//		'<PointSymbolizer>' + rule + '</PointSymbolizer>';
+//	}
+//	if ($("#chggrp").val() == "lineas") {
+//		'<LineSymbolizer>' + rule + '</LineSymbolizer>';
+//	}
+//	if ($("#chggrp").val() == "poligonos") {
+//		'<PolygonSymbolizer>' + rule + '</PolygonSymbolizer>';
+//	}
+//});	

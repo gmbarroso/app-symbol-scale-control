@@ -1,0 +1,1154 @@
+/**
+ * 
+ */
+// variavel para new scale
+var i = 1;
+//variavel para xml
+var sldsymb;
+//var lbllbl;
+var lbl;
+//var rule;
+var lblnewrule;
+var lbllbl;
+
+//var type;
+//var colfill;
+//var parafill;
+//var fill;
+
+//Conversor de css.background para hex
+$.cssHooks.backgroundColor = {
+	    get: function(elem) {
+	        if (elem.currentStyle)
+	            var bg = elem.currentStyle["backgroundColor"];
+	        else if (window.getComputedStyle)
+	            var bg = document.defaultView.getComputedStyle(elem,
+	                null).getPropertyValue("background-color");
+	        if (bg.search("rgb") == -1)
+	            return bg;
+	        else {
+	            bg = bg.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	            function hex(x) {
+	                return ("0" + parseInt(x).toString(16)).slice(-2);
+	            }
+	            return "#" + hex(bg[1]) + hex(bg[2]) + hex(bg[3]);
+	        }
+	    }
+	};
+
+// Abrir propriedades
+$(function() {
+	$("#janela").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+//		"height" : 500,
+//		"width" : 540
+	});
+
+	$("#botao").click(function() {
+		$("#janela").dialog("open");
+	});
+
+	// $( "#ok" ).click(function() {
+	// $( "#janela" ).dialog( "close" );
+	// });
+});
+
+
+// Retorna valor name no botao "OK"
+$(function() {
+	$("#janela2").dialog({
+		autoOpen : false,
+	});
+
+	$("#ok").click(function() {	
+
+//		var typesymb = $("#radio:radio:checked").attr('id')
+//		if $("#radio:radio:checked").attr('sencillo') {
+//			graphic = ''
+//		};	
+		
+		//Sencillo
+		var name = $("#txtbox").val();
+		var desc = $("#txtarea").val();
+		
+		var scale = '';
+		
+		//Tamanho do Símbolo
+		var szsld = $('#sencsizeslider').slider("option", "value");
+		var size = '<Size>' + szsld + '</Size';
+		//Transparencia
+		var opac = $('#senctranspslider').slider("option", "value");
+		var transp = '<Opacity>' + opac + '</Opacity>';
+		//Cor do Símbolo		
+		var colfill = $("#collorpicker_pickersencrell .colpick_new_color").css('backgroundColor');
+		var parafill = '<CssParameter name="fill">' + colfill +'</CssParameter>';
+		var fill = '<Fill>' + parafill + '</Fill>';	
+		
+		//Cor da borda do Símbolo
+		var colstk = $("#collorpicker_pickersencbord .colpick_new_color").css('backgroundColor');
+		var widthstk = $('#sencstrokeslider').slider("option", "value");
+		var das = '';
+		var ar = '';
+			//Pontilhado
+			if ($(".dash option:selected").val() != undefined && $(".dash option:selected").val() != "-1")das+=$(".dash option:selected").val();
+			if ($(".array option:selected").val() != undefined && $(".array option:selected").val() != "-1")ar+=$(".array option:selected").val();
+			var dasarstk;
+			if ($("#dashline").prop('checked')) {
+				dasarstk = '<CssParameter name="stroke-dasharray">' + das + ' ' +ar + '</CssParameter>';
+			} else {
+				das = '';
+				ar = '';
+				dasarstk = '';
+			};
+		var parastk = '<CssParameter name="stroke">' + colstk + '<CssParameter><CssParameter name="stroke-width">' + widthstk + '</CssParameter>';		
+		var stk = '<Stroke>' + parastk + dasarstk + '</Stroke>';
+		
+		//Tipo de símbolo
+		var type = ''; //tomar cuidado com aspas. Se uma vem "" no if, a variavel tem que estar com '' e vice versa
+		if ($("#symbsenc option:selected").val() != undefined && $("#symbsenc option:selected").val() != "-1")type+="<WellKnownName>"+$("#symbsenc option:selected").val()+"</WellKnownName>";
+		//Angulo do simbolo
+		var rotation = '';
+		if ($("#symbsenc option:selected").text() == "Diamond") {
+			rotation = 45;
+		} else {
+			rotation = 0;
+		};
+		var graphic = '<Graphic><Mark>' + type + fill + stk +'</Mark>' + transp + size + '<Rotation>' + rotation + '</Rotation></Graphic>';
+						
+		//Controle de Escala
+		//variáveis sendo declaradas como vazias para serem preenchidas dentro nos if's
+		if ($(".escalamax option:selected").val() != undefined && $(".escalamax option:selected").val() != "-1")scale+='<MaxScaleDenominator>'+$(".escalamax option:selected").val()+'</MaxScaleDenominator>';
+		if ($(".escalamin option:selected").val() != undefined && $(".escalamin option:selected").val() != "-1")scale+='<MinScaleDenominator>'+$(".escalamin option:selected").val()+'</MinScaleDenominator>';
+		//Tipo de Simbolizaçao
+		
+		if ($("#chggrp option:selected").val() == "puntos") {
+			sldsymb = '<PointSymbolizer>' + graphic + '</PointSymbolizer>';
+		}
+		if ($("#chggrp option:selected").val() == "lineas") {
+			graphic = '<Graphic><Mark>' + stk +'</Mark>' + transp + size + '<Rotation>0</Rotation></Graphic>';
+			sldsymb = '<LineSymbolizer>' + graphic + '</LineSymbolizer>';					
+		}
+		if ($("#chggrp option:selected").val() == "poligonos") {
+			graphic = '<Graphic><Mark>' + fill + stk +'</Mark>' + transp + size + '<Rotation>0</Rotation></Graphic>';
+			sldsymb = '<PolygonSymbolizer>' + graphic + '</PolygonSymbolizer>';
+		};				
+				
+		//Label			
+		var lblc = $("#collorpicker_picker .colpick_new_color").css('backgroundColor');
+		var lblfill = '<CssParameter name="font-colour">' + lblc + '</CssParameter>'
+		//Font Weight
+		var lblw;		
+		if ($("#checklblN:checkbox").prop('checked')) {
+			lblw = '<CssParameter name="font-weight">bold</CssParameter>';
+		} 
+		else if ($("#checklblI:checkbox").prop('checked')) {
+			lblw = '<CssParameter name="font-weight">italic</CssParameter>';
+		}
+		else if ($("#checklblS:checkbox").prop('checked')) {
+			lblw = '<CssParameter name="font-weight">oblique</CssParameter>';
+		}
+		else {
+			lblw = '<CssParameter name="font-weight">normal</CssParameter>';
+		};
+		//Font Size
+		var lbltam = '';
+		if ($("#lblsize option:selected").val() != undefined && $("#lblsize option:selected").val() != "-1")lbltam+='<CssParameter name="font-size">'+$("#lblsize option:selected").val()+'</CssParameter>';
+		//Font Family
+		var family = '';
+		if ($("#lblfamily option:selected").val() != undefined && $("#lblfamily option:selected").val() != "-1")family+='<CssParameter name="font-family">'+$("#lblfamily option:selected").val()+'</CssParameter>';
+		var font = '<Font>' + family + lbltam + '<CssParameter name="font-style">normal</CssParameter>' + lblw + lblfill + '</Font>';
+		//Variaves
+		var columlbltxt = $("#lblcolumbox").val();
+		var columlbl = '<Label>' + columlbltxt + '</Label>';
+		var celllbltxt = $("#lblcellbox").val();
+		//Check Label Escala
+		var lblscl = '';
+		if ($("#escalamaxlbl option:selected").val() != undefined && $("#escalamaxlbl option:selected").val() != "-1")lblscl+="<MaxScaleDenominator>"+$("#escalamaxlbl option:selected").val()+"</MaxScaleDenominator>";
+		if ($("#escalaminlbl option:selected").val() != undefined && $("#escalaminlbl option:selected").val() != "-1")lblscl+="<MinScaleDenominator>"+$("#escalaminlbl option:selected").val()+"</MinScaleDenominator>";
+		//Check Label
+		if ($("#checklbltype:checkbox").prop('checked')) {			
+			lbl = '<Rule><Name></Name><ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>' + columlbltxt + '</ogc:PropertyName>'+  
+				'<ogc:Literal>' + celllbltxt + '</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>' + lblscl + '<TextSymbolizer>' + columlbl + font + 
+				'<LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>0.5</AnchorPointX><AnchorPointY>0.0</AnchorPointY></AnchorPoint>'+
+				'<Displacement><DisplacementX>0</DisplacementX><DisplacementY>5</DisplacementY></Displacement></PointPlacement></LabelPlacement>'+
+				'</TextSymbolizer></Rule>';
+		} else {
+			($("#checklbltype:checkbox").prop('unchecked'))	
+			lbl = '';			
+		} 
+		
+//		if ($("#showlblscl:checkbox").prop('checked')) {	
+//			lbl = '';
+//			lbllbl = '<Rule><Name></Name><ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>' + columlbltxt + '</ogc:PropertyName>'+  
+//			'<ogc:Literal>' + celllbltxt + '</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter><Name></Name><TextSymbolizer>' + columlbl + font + 
+//			'<LabelPlacement><PointPlacement><AnchorPoint><AnchorPointX>0.5</AnchorPointX><AnchorPointY>0.0</AnchorPointY></AnchorPoint>'+
+//			'<Displacement><DisplacementX>0</DisplacementX><DisplacementY>5</DisplacementY></Displacement></PointPlacement></LabelPlacement>'+
+//			'</TextSymbolizer></Rule>';
+//			lblnewrule = '<FeatureTypeStyle><Rule>' + lblscl + lbllbl + '</Rule></FeatureTypeStyle>';
+////			lblnewrule = '<FeatureTypeStyle><Rule><Name>' + name + '</Name>' + lblscl + sldsymb + lbllbl + '</Rule></FeatureTypeStyle>';
+//		} else {
+//			($("#showlblscl:checkbox").prop('unchecked'))
+//			lbllbl = '';
+//			lblnewrule = '';
+//		};	
+
+		var sld = '<?xml version="1.0" encoding="UTF-8"?>';
+		sld += '<StyledLayerDescriptor version="1.0.0"';
+		sld +=                       'xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"'; 
+		sld +=                       'xmlns="http://www.opengis.net/sld"'; 
+		sld +=                       'xmlns:ogc="http://www.opengis.net/ogc"'; 
+		sld +=                       'xmlns:xlink="http://www.w3.org/1999/xlink"'; 
+		sld +=                       'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">';
+		sld +=  '<NamedLayer>';
+		sld +=    '<Name>'+ name +'</Name>';
+		sld +=    '</NamedLayer>';
+		sld += 		'<UserStyle>';
+		sld +=			'<Title></Title>';
+		sld +=			'<Abstract>'+ desc +'</Abstract>';
+		sld +=				'<FeatureTypeStyle>';
+		sld +=  				'<Rule>';
+		sld +=    					'<Name>' + name + '</Name>';
+		sld +=    					'<Title></Title>';
+		sld +=						scale;
+		sld +=						sldsymb;
+		sld +=  				'</Rule>';
+		sld +=    					lbl;
+		sld +=  			'</FeatureTypeStyle>';
+		sld +=				lblnewrule;
+		sld += 		'</UserStyle>';
+		sld +=    '</StyledLayerDescriptor>';
+		
+	
+		alert(sld);
+//		alert(rotation);
+//		alert(desc);
+//		alert(grp);
+//		alert($("#txtbox").val());
+//		alert($("#symbsenc option:selected").text());
+//		alert($("#chggrp option:selected").text());
+//		alert($("#chggrp option:selected").val());
+//		alert ($('#picker').colpick().pickersencrell('text'));	
+//		alert($("#txtarea").val());
+//		alert($("#radio:radio:checked").attr('id'));
+//		alert($('#sencstrokeslider').slider("option", "value"));
+//		alert($("#checklbltype:checkbox").prop('checked'));
+//		alert($(".editlbl").button('enable'));
+//		alert($('#pickersencrell').ColorPickerSetColor(color));
+//		alert($('#colorSelector input').val('#pickersencrell' + hex));		
+//		alert($("#collorpicker_pickerbubrell .colpick_new_color").css('backgroundColor'));
+	});
+});
+
+// Janela Simbolizacao
+$(function() {
+	$("#simbwindow").dialog({
+		autoOpen : false,
+		"height" : 150,
+		"width" : 'auto'
+	});
+});
+
+// Label Options
+$(function() {
+	$("#editlblwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 400
+	});
+
+//	$(".editlbl").click(function() {
+//		$("#editlblwindow").dialog("open");
+//	});
+//
+//	$(".oklbl").click(function() {
+//		$("#editlblwindow").dialog("close");
+//	});
+});
+// Edit Symbol Sencillo
+
+$(function() {
+	$("#editsymb").click(function() {
+
+		if ($("#sencillo:checked").val() == "on")
+			$("#editsymbwindow").dialog("open");
+		else if ($("#categorias:checked").val() == "on")
+			$("#editsymbwindow2").dialog("open");
+		else if ($("#bubble:checked").val() == "on")
+			$("#editsymbwindow3").dialog("open");
+		else if ($("#cluster:checked").val() == "on")
+			$("#editsymbwindow4").dialog("open");
+		else if ($("#mapasdecalor:checked").val() == "on")
+			$("#editsymbwindow5").dialog("open");
+	});
+});
+
+function ocultarSimbWindows() {
+
+	$("#editsymbwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 'auto'
+	});
+
+	$("#editsymbwindow2").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 530
+	});
+
+	$("#editsymbwindow3").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 480
+	});
+
+	$("#propbubwindow").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 500
+	});
+
+	$("#editsymbwindow4").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 400
+	});
+
+	$("#editsymbwindow5").dialog({
+		autoOpen : false,
+		"height" : 'auto',
+		"width" : 250
+	});
+}
+
+$(function() {
+	/*
+	 * $( "#editsymbwindow" ).dialog({ autoOpen:false, "height": 'auto',
+	 * "width": 400 }); $( "#sencillo" ).click(function() { $( "#editsymbwindow"
+	 * ).dialog( "open" ); });
+	 */
+
+	$("#oksenc").click(function() {
+		$("#editsymbwindow").dialog("close");
+	});
+});
+// Edit Symbol Categoria
+$(function() {
+	/*
+	 * $( "#editsymbwindow2" ).dialog({ autoOpen:false, "height": 'auto',
+	 * "width": 530 }); $( "#categorias" ).click(function() { $(
+	 * "#editsymbwindow2" ).dialog( "open" ); });
+	 */
+
+	$("#okcat").click(function() {
+		$("#editsymbwindow2").dialog("close");
+	});
+});
+// Edit Symbol Bubble
+$(function() {
+	/*
+	 * $( "#editsymbwindow3" ).dialog({ autoOpen:false, "height": 'auto',
+	 * "width": '500' }); $( "#bubble" ).click(function() { $(
+	 * "#editsymbwindow3" ).dialog( "open" ); });
+	 */
+
+	$("#okbub").click(function() {
+		$("#editsymbwindow3").dialog("close");
+	});
+});
+
+$(function() {
+	/*
+	 * $( "#propbubwindow" ).dialog({ autoOpen:false, "height": 'auto', "width":
+	 * 500 });
+	 */
+
+	$("#propbub").click(function() {
+		$("#propbubwindow").dialog("open");
+	});
+
+	$("#okbubwindow").click(function() {
+		$("#propbubwindow").dialog("close");
+	});
+});
+// Edit Symbol Cluster
+$(function() {
+	/*
+	 * $( "#editsymbwindow4" ).dialog({ autoOpen:false, "height": 'auto',
+	 * "width": 450 }); $( "#cluster" ).click(function() { $( "#editsymbwindow4"
+	 * ).dialog( "open" ); });
+	 */
+
+	$("#okclus").click(function() {
+		$("#editsymbwindow4").dialog("close");
+	});
+});
+// Edit Symbol Mapas de Calor
+$(function() {
+	/*
+	 * $( "#editsymbwindow5" ).dialog({ autoOpen:false, "height": 'auto',
+	 * "width": 250 }); $( "#mapasdecalor" ).click(function() { $(
+	 * "#editsymbwindow5" ).dialog( "open" ); });
+	 */
+
+	$("#okmc").click(function() {
+		$("#editsymbwindow5").dialog("close");
+	});
+});
+
+// Botao
+$(function() {
+	$("button").button().click(function(event) {
+		event.preventDefault();
+	});
+});
+
+$(".editlbl").button({
+	disabled : true
+});
+
+$("#checklbltype").prop({
+	checked : false
+});
+
+// Radios Janela Sim
+$(function() {
+	$("#radio").buttonset();
+});
+
+// Checkboxes Nova escala, Lable e Tipolbl
+$(function() {
+	$("#checknesc").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#checklbltype").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#checklblN").button();
+	$("#checklblI").button();
+	$("#checklblS").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#chkapplyfilter").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#chkfilterman").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#sencselsymb").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#selsecfieldcat").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#defintervalcat").button();
+	$("#format").buttonset();
+});
+
+$(function() {
+	$("#calc").button();
+	$("#format").buttonset();
+});
+$(function() {
+	$("#showlblscl").button();
+	$("#format").buttonset();
+});
+$(function() {
+	$("#dashline").button();
+	$("#format").buttonset();
+});
+
+// Slider
+$(function() {
+	$("#transpslider").slider({
+		range : "max",
+		min : 0,
+		max : 100,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txttransp").val(ui.value);
+		}
+	});
+	$("#txttransp").val($("#transpslider").slider("value"));
+});
+
+$(function() {
+	$("#sencstrokeslider").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencstroke").val(ui.value);
+		}
+	});
+	$("#txtsencstroke").val($("#sencstrokeslider").slider("value"));
+});
+
+$(function() {
+	$("#sencsizeslider").slider({
+		range : "max",
+		min : 0,
+		max : 36,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsencsize").val(ui.value);
+		}
+	});
+	$("#txtsencsize").val($("#sencsizeslider").slider("value"));
+});
+
+$(function() {
+	$("#senctranspslider").slider({
+		range : "max",
+		min : 0,
+		max : 1,
+		step: 0.1,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtsenctransp").val(ui.value);
+		}
+	});
+	$("#txtsenctransp").val($("#senctranspslider").slider("value"));
+});
+
+$(function() {
+	$("#bubstrokeslider").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubstroke").val(ui.value);
+		}
+	});
+	$("#txtbubstroke").val($("#bubstrokeslider").slider("value"));
+});
+
+$(function() {
+	$("#bubtranspslider").slider({
+		range : "max",
+		min : 0,
+		max : 100,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubtransp").val(ui.value);
+		}
+	});
+	$("#txtbubtransp").val($("#bubtranspslider").slider("value"));
+});
+
+$(function() {
+	$("#bubminslider").slider({
+		range : "max",
+		min : 0,
+		max : 100,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubmin").val(ui.value);
+		}
+	});
+	$("#txtbubmin").val($("#bubminslider").slider("value"));
+});
+
+$(function() {
+	$("#bubmaxslider").slider({
+		range : "max",
+		min : 0,
+		max : 100,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtbubmax").val(ui.value);
+		}
+	});
+	$("#txtbubmax").val($("#bubmaxslider").slider("value"));
+});
+
+$(function() {
+	$("#clusstrokeslider").slider({
+		range : "max",
+		min : 0,
+		max : 10,
+		value : 0,
+		slide : function(event, ui) {
+			$("#txtclusstroke").val(ui.value);
+		}
+	});
+	$("#txtclusstroke").val($("#clusstrokeslider").slider("value"));
+});
+
+// Colorpicker
+$(function() {
+	$('#picker').colpick(null, "picker");
+});
+
+$(function() {
+    $('#pickersencrell').colpick(null, "pickersencrell");
+});
+
+$(function() {
+	$('#pickersencbord').colpick(null, "pickersencbord");
+});
+
+$(function() {
+	$('#pickerbubrell').colpick(null, "pickerbubrell");
+});
+
+$(function() {
+	$('#pickerbubbord').colpick(null, "pickerbubbord");
+});
+
+$(function() {
+	$('#pickerclusrell').colpick(null, "pickerclusrell");
+});
+
+$(function() {
+	$('#pickerclusbord').colpick(null, "pickerclusbord");
+});
+
+$(function() {
+	$('#pickercluslbl').colpick(null, "pickercluslbl");
+});
+
+// Add new scale
+$(function() {
+	$("#addnewscale").click(
+			function() {
+				if (i < 4) {
+					$("#rules").append(
+							"<h3>Rule</h3><div style='height:auto;'>"
+									+ $("#rulemaster").html() + "</div>");
+					i++;
+					if(i==4){
+//						$("#addnewscale").disable();
+					}
+					if (i > 1) {
+//						$(".cerrar").enable();
+					}
+					$("#rules").accordion("refresh");
+					definenewrule();
+				}
+			});
+});
+
+//$(function() {
+//	$("#rules").accordion({
+//		collapsible : true,
+//		heightStyle : "fill"
+//	});
+//});
+//$(function() {
+//	$("#addnewrule").resizable({
+//		minHeight : 140,
+//		minWidth : 200,
+//		resize : function() {
+//			$("#rules").accordion("refresh");
+//		}
+//	});
+//});
+
+// Comboboxes
+(function($) {
+	$
+			.widget(
+					"custom.combobox",
+					{
+						_create : function() {
+							this.wrapper = $("<span>").addClass(
+									"custom-combobox")
+									.insertAfter(this.element);
+							this.element.hide();
+							this._createAutocomplete();
+							this._createShowAllButton();
+						},
+						_createAutocomplete : function() {
+							var selected = this.element.children(":selected"), value = selected
+									.val() ? selected.text() : "";
+							this.input = $("<input>")
+									.appendTo(this.wrapper)
+									.val(value)
+									.attr("title", "")
+									.addClass(
+											"custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left")
+									.autocomplete({
+										delay : 0,
+										minLength : 0,
+										source : $.proxy(this, "_source")
+									}).tooltip({
+										tooltipClass : "ui-state-highlight"
+									});
+							this._on(this.input, {
+								autocompleteselect : function(event, ui) {
+									ui.item.option.selected = true;
+									this._trigger("select", event, {
+										item : ui.item.option
+									});
+								},
+								autocompletechange : ""
+							});
+						},
+						_createShowAllButton : function() {
+							var input = this.input, wasOpen = false;
+							$("<a>").attr("tabIndex", -1).attr("title",
+									"Show All Items").tooltip().appendTo(
+									this.wrapper).button({
+								icons : {
+									primary : "ui-icon-triangle-1-s"
+								},
+								text : false
+							}).removeClass("ui-corner-all").addClass(
+									"custom-combobox-toggle ui-corner-right")
+									.mousedown(
+											function() {
+												wasOpen = input.autocomplete(
+														"widget")
+														.is(":visible");
+											}).click(function() {
+										input.focus();
+										// Close if already visible
+										if (wasOpen) {
+											return;
+										}
+										// Pass empty string as value to search
+										// for, displaying all results
+										input.autocomplete("search", "");
+									});
+						},
+						_source : function(request, response) {
+							var matcher = new RegExp($.ui.autocomplete
+									.escapeRegex(request.term), "i");
+							response(this.element.children("option").map(
+									function() {
+										var text = $(this).text();
+										if (this.value
+												&& (!request.term || matcher
+														.test(text)))
+											return {
+												label : text,
+												value : text,
+												option : this
+											};
+									}));
+						},
+						_removeIfInvalid : function(event, ui) {
+							// Selected an item, nothing to do
+							if (ui.item) {
+								return;
+							}
+							// Search for a match (case-insensitive)
+							var value = this.input.val(), valueLowerCase = value
+									.toLowerCase(), valid = false;
+							this.element
+									.children("option")
+									.each(
+											function() {
+												if ($(this).text()
+														.toLowerCase() === valueLowerCase) {
+													this.selected = valid = true;
+													return false;
+												}
+											});
+							// Found a match, nothing to do
+							if (valid) {
+								return;
+							}
+							// Remove invalid value
+							this.input.val("").attr("title",
+									value + " didn't match any item").tooltip(
+									"open");
+							this.element.val("");
+							this._delay(function() {
+								this.input.tooltip("close").attr("title", "");
+							}, 2500);
+							this.input.autocomplete("instance").term = "";
+						},
+						_destroy : function() {
+							this.wrapper.remove();
+							this.element.show();
+						}
+					});
+})(jQuery);
+$(function() {
+	//$("#chggrp").combobox();
+	$("#toggle").click(function() {
+		$("#chggrp").toggle();
+	});
+//	$(".escalamin").combobox();
+//	$("#toggle").click(function() {
+//		$(".escalamin").toggle();
+//	});
+//	$(".escalamax").combobox();
+//	$("#toggle").click(function() {
+//		$(".escalamax").toggle();
+//	});
+	$("#lblsize").combobox();
+	$("#toggle").click(function() {
+		$("#lblsize").toggle();
+	});
+	$("#lblfamily").combobox();
+	$("#toggle").click(function() {
+		$("#lblfamily").toggle();
+	});
+//	$("#lblattr").combobox();
+//	$("#toggle").click(function() {
+//		$("#lblattr").toggle();
+//	});
+	$("#cmbselsymb").combobox();
+	$("#toggle").click(function() {
+		$("#cmbselsymb").toggle();
+	});
+	/*$("#symbsenc").combobox();
+	$("#toggle").click(function() {
+	$("#symbsenc").toggle();
+	});*/
+});
+
+// posso apagar daqui se eu quiser pois já tenho o addnewrul
+$(function() {
+	$("#escalaminlbl").combobox();
+	$("#toggle").click(function() {
+		$("#escalaminlbl").toggle();
+	});
+});
+$(function() {
+	$("#escalamaxlbl").combobox();
+	$("#toggle").click(function() {
+		$("#escalamaxlbl").toggle();
+	});
+});
+$(function() {
+	$("#selfieldcat").combobox();
+	$("#toggle").click(function() {
+		$("#selfieldcat").toggle();
+	});
+});
+$(function() {
+	$("#selfieldcat2").combobox();
+	$("#toggle").click(function() {
+		$("#selfieldcat2").toggle();
+	});
+});
+$(function() {
+	$("#colorrampcat").combobox();
+	$("#toggle").click(function() {
+		$("#colorrampcat").toggle();
+	});
+});
+$(function() {
+	$("#normalcat").combobox();
+	$("#toggle").click(function() {
+		$("#normalcat").toggle();
+	});
+});
+$(function() {
+	$("#intervalcat").combobox();
+	$("#toggle").click(function() {
+		$("#intervalcat").toggle();
+	});
+});
+$(function() {
+	$("#selfieldbub").combobox();
+	$("#toggle").click(function() {
+		$("#selfieldbub").toggle();
+	});
+});
+$(function() {
+	$("#normalbub").combobox();
+	$("#toggle").click(function() {
+		$("#normalbub").toggle();
+	});
+});
+$(function() {
+	$("#colorrampbub").combobox();
+	$("#toggle").click(function() {
+		$("#colorrampbub").toggle();
+	});
+});
+$(function() {
+	$("#intervalbub").combobox();
+	$("#toggle").click(function() {
+		$("#intervalbub").toggle();
+	});
+});
+$(function() {
+	$("#groupclus").combobox();
+	$("#toggle").click(function() {
+		$("#groupclus").toggle();
+	});
+});
+$(function() {
+	$("#minsizeclus").combobox();
+	$("#toggle").click(function() {
+		$("#minsizeclus").toggle();
+	});
+});
+$(function() {
+	$("#maxsizeclus").combobox();
+	$("#toggle").click(function() {
+		$("#maxsizeclus").toggle();
+	});
+});
+$(function() {
+	$("#fontclus").combobox();
+	$("#toggle").click(function() {
+		$("#fontclus").toggle();
+	});
+});
+$(function() {
+	$("#mcselfield").combobox();
+	$("#toggle").click(function() {
+		$("#mcselfield").toggle();
+	});
+});
+$(function() {
+	$("#mcradio").combobox();
+	$("#toggle").click(function() {
+		$("#mcradio").toggle();
+	});
+});
+$(function() {
+	$("#mccellh").combobox();
+	$("#toggle").click(function() {
+		$("#mccellh").toggle();
+	});
+});
+$(function() {
+	$("#mccellw").combobox();
+	$("#toggle").click(function() {
+		$("#mccellw").toggle();
+	});
+});
+$(function() {
+	$("#mccolour").combobox();
+	$("#toggle").click(function() {
+		$("#mccolour").toggle();
+	});
+});
+$(function() {
+	$("#chkqrum").combobox();
+	$("#toggle").click(function() {
+		$("#chkqrum").toggle();
+	});
+});
+$(function() {
+	$("#chkqrdois").combobox();
+	$("#toggle").click(function() {
+		$("#chkqrdois").toggle();
+	});
+});
+
+$(function() {
+
+	// the the default base path where you installed the code
+	// normally the path is disconvered from the script with
+	// id=jquery-colorramp-script
+	// $().colorramp('cfg').path = '/js/jquery-colorramp/';
+
+	// configure a div element as a color ramp
+	$('.colorramp').colorramp();
+
+	// when the user selects a color ramp, the change event is called
+	// with the colorArray
+	$('.colorramp').change(function() {
+		$(this).colorramp('getColors', reportColors);
+	});
+
+	// output colors used in selected ramp when user clicks the report
+	// colors button
+	$('.getcolorsbut').click(function() {
+		$(this).prev('.colorramp').colorramp('getColors', reportColors);
+	});
+	//		  
+	//
+	// // function to make an array of colors, and print it to the screen nicely
+	// function reportColors(colorArray) {
+	// var buf = [];
+	// $.each(colorArray, function(){
+	// buf.push('<font color='+this+'>'+this+'</font>');
+	// });
+	// $('#selectedramp').html(buf.join(', '));
+	// }
+
+});
+
+// $('input:checkbox[#checklbltype]').is('checked', true);
+
+// Retorna Valor do botao(enable)
+// $("#editlbl").button("disable")
+
+// $("#checklbltype").attr("autocomplete", "off");
+
+// Ativa botao através do checkbox
+//$(function() {
+//	$(".editlbl").button();
+//	$('#checklbltype').change(function() {
+//		var isChecked = $(this).prop("checked");
+//		if (isChecked)
+//			$(".editlbl").button("enable");
+//		else
+//			$(".editlbl").button("disable");
+//	});
+//});
+
+// Mostra um div através do checkbox
+$(document).ready(function() {
+	$('#chkapplyfilter').change(function() {
+		if (this.checked)
+			$('#applyfilter').show();
+		else
+			$('#applyfilter').hide();
+	});
+});
+$(document).ready(function() {
+	$('#chkfilterman').change(function() {
+		if (this.checked)
+			$('#filterbox').show();
+		else
+			$('#filterbox').hide();
+	});
+});
+$(document).ready(function() {
+	$('#sencselsymb').change(function() {
+		if (this.checked)
+			$('#sencselect').show();
+		else
+			$('#sencselect').hide();
+	});
+});
+
+$(document).ready(function() {
+	$('#selsecfieldcat').change(function() {
+		if (this.checked)
+			$('#divsecfield').show();
+		else
+			$('#divsecfield').hide();
+	});
+	definenewrule();
+});
+
+$(document).ready(function() {
+	$('#showlblscl').change(function() {
+		if (this.checked)
+			$('#escalaslbl').show();
+		else
+			$('#escalaslbl').hide();
+	});
+});
+
+$(document).ready(function() {
+	$('#dashline').change(function() {
+		if (this.checked)
+			$('#linedash').show();
+		else
+			$('#linedash').hide();
+	});
+});
+
+//Tentativas de show/hide através de um combobox
+$(document).ready(function() {
+    $('#chggrp').change(function() {
+            if ($("#chggrp option:selected").val() == "puntos") {
+                    $('#ptnstipus').show();
+            }
+            else if ($("#chggrp option:selected").val() == "lineas") {
+                    $('#ptnstipus').hide();
+            }
+            else if ($("#chggrp option:selected").val() == "poligonos") {
+                    $('#ptnstipus').hide();
+            }
+    });
+});		
+
+//$(document).ready(function() {
+//	$('#chggrp').change(function() {
+//	  if ($('#chggrp').text() == 'Lineas') {
+//	   $('#linedash').show();
+//	   }
+//	  else {
+//	   $('#linedash').hide();
+//	   } 	 
+//	})
+//});
+
+
+//botoes de N I e S
+$(function() {
+//$(".editlbl").button();
+$('#checklblN').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblI").button("disable");
+		$("#checklblS").button("disable");
+	}
+	else {
+		$("#checklblI").button("enable");
+		$("#checklblS").button("enable")
+	}
+});
+$('#checklblI').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblN").button("disable");
+		$("#checklblS").button("disable");
+	}
+	else {
+		$("#checklblN").button("enable");
+		$("#checklblS").button("enable")
+	}
+});
+$('#checklblS').change(function() {
+	var isChecked = $(this).prop("checked");
+	if (isChecked) {
+		$("#checklblI").button("disable");
+		$("#checklblN").button("disable");
+	}
+	else {
+		$("#checklblI").button("enable");
+		$("#checklblN").button("enable")
+	}
+});
+});
+
+
+
+//function pageLoad() {
+//
+//	// assuming that $ is jQuery
+//	$(".testando").each(function() {
+//
+//		// this refers to the element
+//		var combo = $find(this.id);
+//		combo.disable();
+//
+//	});
+//}
+
+//var rule = '';
+//
+//var sldsymb = $("#chggrp").change(function(){
+//	if ($("#chggrp").val() == "puntos") {
+//		'<PointSymbolizer>' + rule + '</PointSymbolizer>';
+//	}
+//	if ($("#chggrp").val() == "lineas") {
+//		'<LineSymbolizer>' + rule + '</LineSymbolizer>';
+//	}
+//	if ($("#chggrp").val() == "poligonos") {
+//		'<PolygonSymbolizer>' + rule + '</PolygonSymbolizer>';
+//	}
+//});	

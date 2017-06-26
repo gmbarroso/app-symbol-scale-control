@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 1 elements(s) to &apos;javascript.js&apos;&#x0D;&#x0A;- Original project: &apos;Master&apos;&#x0D;&#x0A;- Destination element: &apos;javascript.js&apos;&#x0D;&#x0A;- Original element: &apos;javascript.js&apos;" description="Copy file" element1="com/sitep/js/javascript.js" files="1" flags="589830" folders="0" id="org.eclipse.wst.jsdt.ui.copy" log="com/sitep/js/javascript.js&#x09;true&#x09;true&#x09;javascriptRule.js" policy="org.eclipse.wst.jsdt.ui.copyResources" stamp="1418813887649" target="/Master/com/sitep/js/javascript.js" units="0" version="1.0"/>
+</session>
